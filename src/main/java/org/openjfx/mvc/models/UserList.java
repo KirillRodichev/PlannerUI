@@ -19,8 +19,9 @@ public class UserList implements Serializable {
         throw new UserNotFoundException("User with such id doesn't exist");
     }
 
-    public void addUser(User user) {
+    public int push(User user) {
         this.users.add(user);
+        return this.users.get(this.users.size() - 1).getId();
     }
 
     public void setUserById(int id, User user) {
@@ -39,7 +40,7 @@ public class UserList implements Serializable {
      когда совершается переход на next, при проверке был ли элемент изменен. Это все из-за foreach, думаю.
      Он ведь использует итератор
     */
-    public void removeUser(int id) {
+    public void remove(int id) {
         boolean found = false;
         for (int i = 0; i < this.users.size(); i++) {
             if (this.users.get(i).getId() == id) {

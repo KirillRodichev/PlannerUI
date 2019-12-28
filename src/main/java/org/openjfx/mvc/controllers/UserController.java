@@ -10,16 +10,20 @@ import java.util.Collection;
 import java.util.Date;
 
 public class UserController {
-    UserList userListModel = new UserList();
+    UserList userListModel;
+
+    public UserController() {
+        this.userListModel = new UserList();
+    }
 
     public void actionDeleteUser(int id) {
-        this.userListModel.removeUser(id);
+        this.userListModel.remove(id);
     }
 
     // ADD ACTIONS
 
-    public void actionAddUser(String name) {
-        this.userListModel.addUser(new User(name));
+    public int actionPushUser(String name) {
+        return this.userListModel.push(new User(name));
     }
 
     public void actionAddProject(int userId, String projectName, Task...tasks) throws UserNotFoundException {
@@ -35,6 +39,16 @@ public class UserController {
         project.add(task);
         user.setProjectByIndex(projectIndex, project);
         this.userListModel.setUserById(userId, user);
+    }
+
+    public void actionAddTask(int userId, Task task) throws UserNotFoundException {
+        User user = this.userListModel.getUserByID(userId);
+        user.addTask(task);
+    }
+
+    public void actionAddTasks(int userId, Task ... tasks) throws UserNotFoundException {
+        User user = this.userListModel.getUserByID(userId);
+        user.addTasks(tasks);
     }
 
     // SET ACTIONS

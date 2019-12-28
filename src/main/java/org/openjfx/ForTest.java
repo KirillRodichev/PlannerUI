@@ -87,7 +87,7 @@ public class ForTest {
         project1.setType(TaskType.LESS_IMPORTANT);
         project1.setDescription("wait u just dissed me, I'm perplexed");
 
-        model.addUser(user);
+        model.push(user);
 
         /*try (PrintWriter writer = new PrintWriter(new FileWriter("usersInfo.txt"))) {
             //user.writeFormat(writer);
@@ -131,7 +131,7 @@ public class ForTest {
             "health"
         );
         user1.addProject("Health care", task5);
-        model.addUser(user1);
+        model.push(user1);
 
         /*try (PrintWriter writer = new PrintWriter(new FileWriter("usersInfo.txt"))) {
             model.writeFormat(writer);
@@ -145,9 +145,9 @@ public class ForTest {
             tempProject1.writeFormat(writer);
         }*/
 
-        model.removeUser(1);
+        model.remove(1);
 
-        model.addUser(new User("Lera"));
+        model.push(new User("Lera"));
         User Lera = null;
         try {
             Lera = model.getUserByID(2);

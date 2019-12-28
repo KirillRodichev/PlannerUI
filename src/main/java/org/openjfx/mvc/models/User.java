@@ -203,12 +203,12 @@ public class User implements Serializable, Selectable {
     }
 
     public Collection<ITask> getTasksOutOfProjects() {
-        Collection<ITask> uniqueTasks = new ArrayList<ITask>();
-        for (Project project : this.projects) {
-            Collection<ITask> tasksCollection = project.getTasks();
-            for (ITask task : this.tasks) {
-                if (!tasksCollection.contains(task) && !uniqueTasks.contains(task)) {
-                    uniqueTasks.add(task);
+        Collection<ITask> uniqueTasks = tasks;
+        for (ITask task : this.tasks) {
+            for (Project project : this.projects) {
+                Collection<ITask> tasksCollection = project.getTasks();
+                if (tasksCollection.contains(task)) {
+                    uniqueTasks.remove(task);
                 }
             }
         }
@@ -223,6 +223,10 @@ public class User implements Serializable, Selectable {
 
     public void addTask(ITask task) {
         this.tasks.add(task);
+    }
+
+    public void addTasks(ITask ... tasks) {
+        this.tasks.addAll(Arrays.asList(tasks));
     }
 
     public void removeTaskById(int id) throws TaskIndexOutOfBoundsException {

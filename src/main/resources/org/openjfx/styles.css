@@ -50,6 +50,11 @@
     -fx-pref-width: 100;
 }
 
-.modal__text-field {
-    -fx-pref-width: 100;
+.deleteBtn {
+    -fx-min-width: 70;
+}
+
+.addBtn {
+    -fx-min-width: 70;
+    -fx-background-color: #92fa7f;
 }

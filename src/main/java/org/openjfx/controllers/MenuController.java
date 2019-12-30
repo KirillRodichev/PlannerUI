@@ -51,7 +51,7 @@ public class MenuController {
                     ),
                     taskController.actionCreateTask(
                             "Smack the button",
-                            "This button belongs to this app",
+                            null,
                             new Date(),
                             new Date(2021, Calendar.APRIL, 20),
                             TaskType.LESS_IMPORTANT,
@@ -138,6 +138,22 @@ public class MenuController {
         container.getChildren().add(containerHeader);
     }
 
+    private void addOnMouseClickedListener(
+            Hyperlink hyperlink, ArrayList<ITask> tasks, String windowTitle, String windowField, int index
+    ) {
+        hyperlink.setOnMouseClicked((event1 -> {
+            Object res = ModalWindow.newWindow(windowTitle, windowField);
+            hyperlink.setText(res.toString());
+            hyperlink.getStyleClass().remove("addBtn");
+            int taskIndex = taskController.getTaskIndex((Task) tasks.get(index));
+            try {
+                userController.actionSetTaskField(this.userId, taskIndex, windowField, res);
+            } catch (UserNotFoundException e) {
+                e.printStackTrace();
+            }
+        }));
+    }
+
     private void addLinks(ArrayList<ITask> tasks, FlowPane container) {
         Hyperlink[] taskLinks = new Hyperlink[tasks.size()];
         VBox verticalContainer = new VBox();
@@ -154,72 +170,167 @@ public class MenuController {
                         Separator separator = new Separator(Orientation.HORIZONTAL);
                         separator.setStyle("-fx-pref-height: 40;");
                         taskInfoContainer.add(separator, 0, 0);
-                        Label l = new Label("Name: ");
-                        l.getStyleClass().add("taskLabel");
-                        taskInfoContainer.add(l, 0, 1);
-                        Hyperlink h = new Hyperlink(tasks.get(finalI).getName());
-                        h.getStyleClass().add("taskLink");
-                        taskInfoContainer.add(h, 1, 1);
+
+                        Label label = new Label("Name: ");
+                        label.getStyleClass().add("taskLabel");
+                        taskInfoContainer.add(label, 0, 1);
+                        Hyperlink hyperlink = new Hyperlink(tasks.get(finalI).getName());
+                        hyperlink.getStyleClass().add("taskLink");
+                        addOnMouseClickedListener(
+                                hyperlink,
+                                tasks,
+                                "Set name",
+                                "name",
+                                finalI
+                        );
+                        taskInfoContainer.add(hyperlink, 1, 1);
+
+                        Label label1 = new Label("Description: ");
+                        label1.getStyleClass().add("taskLabel");
+                        taskInfoContainer.add(label1, 0, 2);
+                        Hyperlink hyperlink1;
+                        String modalWindowTitle;
                         if (tasks.get(finalI).getDescription() != null) {
-                            Label label = new Label("Description: ");
-                            label.getStyleClass().add("taskLabel");
-                            taskInfoContainer.add(label, 0, 2);
-                            Hyperlink hyperlink = new Hyperlink(tasks.get(finalI).getDescription());
-                            hyperlink.getStyleClass().add("taskLink");
-                            hyperlink.setOnMouseClicked((event1 -> {
-                                String str = (String) ModalWindow.newWindow("Set Description", "description");
-                                hyperlink.setText(str);
-                                int taskIndex = taskController.getTaskIndex((Task) tasks.get(finalI));
-                                try {
-                                    userController.actionSetTaskField(this.userId, taskIndex, "description", str);
-                                } catch (UserNotFoundException e) {
-                                    e.printStackTrace();
-                                }
-                            }));
-                            taskInfoContainer.add(hyperlink, 1, 2);
+                            hyperlink1 = new Hyperlink(tasks.get(finalI).getDescription());
+                            hyperlink1.getStyleClass().add("taskLink");
+                            modalWindowTitle = "Set description";
+                        } else {
+                            hyperlink1 = new Hyperlink("add");
+                            hyperlink1.getStyleClass().add("addBtn");
+                            modalWindowTitle = "Add description";
                         }
+                        addOnMouseClickedListener(
+                                hyperlink1,
+                                tasks,
+                                modalWindowTitle,
+                                "description",
+                                finalI
+                        );
+                        taskInfoContainer.add(hyperlink1, 1, 2);
+
+                        Label label2 = new Label("Start date: ");
+                        label2.getStyleClass().add("taskLabel");
+                        taskInfoContainer.add(label2, 0, 3);
+                        Hyperlink hyperlink2;
+                        String modalWindowTitle1;
                         if (tasks.get(finalI).getStartDate() != null) {
-                            Label label = new Label("Start date: ");
-                            label.getStyleClass().add("taskLabel");
-                            taskInfoContainer.add(label, 0, 3);
-                            Hyperlink hyperlink = new Hyperlink(tasks.get(finalI).getStartDate().toString());
-                            hyperlink.getStyleClass().add("taskLink");
-                            taskInfoContainer.add(hyperlink, 1, 3);
+                            modalWindowTitle1 = "Set start date";
+                            hyperlink2 = new Hyperlink(tasks.get(finalI).getStartDate().toString());
+                            hyperlink2.getStyleClass().add("taskLink");
+                        } else {
+                            modalWindowTitle1 = "Add start date";
+                            hyperlink2 = new Hyperlink("add");
+                            hyperlink2.getStyleClass().add("addBtn");
                         }
+                        addOnMouseClickedListener(
+                                hyperlink2,
+                                tasks,
+                                modalWindowTitle1,
+                                "startDate",
+                                finalI
+                        );
+                        taskInfoContainer.add(hyperlink2, 1, 3);
+
+                        Label label3 = new Label("Finish date: ");
+                        label3.getStyleClass().add("taskLabel");
+                        taskInfoContainer.add(label3, 0, 4);
+                        Hyperlink hyperlink3;
+                        String modalWindowTitle3;
                         if (tasks.get(finalI).getFinishDate() != null) {
-                            Label label = new Label("Finish date: ");
-                            label.getStyleClass().add("taskLabel");
-                            taskInfoContainer.add(new Label("Finish date: "), 0, 4);
-                            Hyperlink hyperlink = new Hyperlink(tasks.get(finalI).getFinishDate().toString());
-                            hyperlink.getStyleClass().add("taskLink");
-                            taskInfoContainer.add(hyperlink, 1, 4);
+                            modalWindowTitle3 = "Set finish date";
+                            hyperlink3 = new Hyperlink(tasks.get(finalI).getFinishDate().toString());
+                            hyperlink3.getStyleClass().add("taskLink");
+
+                        } else {
+                            modalWindowTitle3 = "Add finish date";
+                            hyperlink3 = new Hyperlink("add");
+                            hyperlink3.getStyleClass().add("btnAdd");
                         }
+                        addOnMouseClickedListener(
+                                hyperlink3,
+                                tasks,
+                                modalWindowTitle3,
+                                "finishDate",
+                                finalI
+                        );
+                        taskInfoContainer.add(hyperlink3, 1, 4);
+
+
+                        Label label4 = new Label("Type: ");
+                        label4.getStyleClass().add("taskLabel");
+                        taskInfoContainer.add(label4, 0, 5);
+                        String modalWindowTitle4;
+                        Hyperlink hyperlink4;
                         if (tasks.get(finalI).getType() != null) {
-                            Label label = new Label("Type: ");
-                            label.getStyleClass().add("taskLabel");
-                            taskInfoContainer.add(new Label("Type: "), 0, 5);
-                            Hyperlink hyperlink = new Hyperlink(tasks.get(finalI).getType().toString());
-                            hyperlink.getStyleClass().add("taskLink");
-                            taskInfoContainer.add(hyperlink, 1, 5);
+                            modalWindowTitle4 = "Set type";
+                            hyperlink4 = new Hyperlink(tasks.get(finalI).getType().toString());
+                            hyperlink4.getStyleClass().add("taskLink");
+
+                        } else {
+                            modalWindowTitle4 = "Add type";
+                            hyperlink4 = new Hyperlink("add");
+                            hyperlink4.getStyleClass().add("addBtn");
                         }
+                        addOnMouseClickedListener(
+                                hyperlink4,
+                                tasks,
+                                modalWindowTitle4,
+                                "type",
+                                finalI
+                        );
+                        taskInfoContainer.add(hyperlink4, 1, 5);
+
+
+                        Label label5 = new Label("State: ");
+                        label5.getStyleClass().add("taskLabel");
+                        taskInfoContainer.add(label5, 0, 6);
+                        String modalWindowTitle5;
+                        Hyperlink hyperlink5;
                         if (tasks.get(finalI).getState() != null) {
-                            Label label = new Label("State: ");
-                            label.getStyleClass().add("taskLabel");
-                            taskInfoContainer.add(new Label("State: "), 0, 6);
-                            Hyperlink hyperlink = new Hyperlink(tasks.get(finalI).getState().toString());
-                            hyperlink.getStyleClass().add("taskLink");
-                            taskInfoContainer.add(hyperlink, 1, 6);
+                            modalWindowTitle5 = "Set state";
+                            hyperlink5 = new Hyperlink(tasks.get(finalI).getState().toString());
+                            hyperlink5.getStyleClass().add("taskLink");
+
+                        } else {
+                            modalWindowTitle5 = "Add state";
+                            hyperlink5 = new Hyperlink("add");
+                            hyperlink5.getStyleClass().add("addBtn");
                         }
+                        addOnMouseClickedListener(
+                                hyperlink5,
+                                tasks,
+                                modalWindowTitle5,
+                                "state",
+                                finalI
+                        );
+                        taskInfoContainer.add(hyperlink5, 1, 6);
+
+                        Label label6 = new Label("Tag: ");
+                        label6.getStyleClass().add("taskLabel");
+                        taskInfoContainer.add(label6, 0, 7);
+                        String modalWindowTitle6;
+                        Hyperlink hyperlink6;
                         if (tasks.get(finalI).getTag() != null) {
-                            Label label = new Label("Tag: ");
-                            label.getStyleClass().add("taskLabel");
-                            taskInfoContainer.add(new Label("Tag: "), 0, 7);
-                            Hyperlink hyperlink = new Hyperlink(tasks.get(finalI).getTag());
-                            hyperlink.getStyleClass().add("taskLink");
-                            taskInfoContainer.add(hyperlink, 1, 7);
+                            modalWindowTitle6 = "Set tag";
+                            hyperlink6 = new Hyperlink(tasks.get(finalI).getTag());
+                            hyperlink6.getStyleClass().add("taskLink");
+                        } else {
+                            modalWindowTitle6 = "Add tag";
+                            hyperlink6 = new Hyperlink("add");
+                            hyperlink6.getStyleClass().add("addBtn");
                         }
+                        addOnMouseClickedListener(
+                                hyperlink6,
+                                tasks,
+                                modalWindowTitle6,
+                                "tag",
+                                finalI
+                        );
+                        taskInfoContainer.add(hyperlink6, 1, 7);
+
                         if (!taskInfoContainer.getChildren().isEmpty()) {
                             Button deleteTaskBtn = new Button("Delete");
+                            deleteTaskBtn.getStyleClass().add("deleteBtn");
                             taskInfoContainer.add(deleteTaskBtn, 0, 8);
                             deleteTaskBtn.setOnMouseClicked((event1 -> {
 

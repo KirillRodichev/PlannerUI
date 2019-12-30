@@ -1,7 +1,9 @@
 package org.openjfx.mvc.view;
 
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
@@ -10,18 +12,21 @@ import org.openjfx.enums.TaskState;
 import org.openjfx.enums.TaskType;
 
 public class ModalWindow {
-
     public static Object newWindow(String title, String field) {
         final Object[] result = {null};
         Stage window = new Stage();
         window.initModality(Modality.APPLICATION_MODAL);
         VBox container = new VBox();
+        container.setStyle("-fx-padding: 30");
         Label header = new Label(title);
-        header.getStyleClass().add("taskHeader");
+        header.setStyle("-fx-font-size: 16; -fx-font-family: 'Roboto Medium'");
+        header.setPadding(new Insets(0, 0, 20, 0));
         container.getChildren().add(header);
         TextField textField = new TextField();
         textField.getStyleClass().add("modal__text-field");
+        HBox btnContainer = new HBox();
         Button confirmBtn = new Button("Confirm");
+        confirmBtn.setStyle("-fx-min-width: 70");
         switch (field) {
             case "startDate":
             case "finishDate":
@@ -85,9 +90,13 @@ public class ModalWindow {
                 break;
         }
         Button closeBtn = new Button("Close");
+        closeBtn.setStyle("-fx-min-width: 70");
+        btnContainer.setPadding(new Insets( 15, 0, 15, 0));
+        btnContainer.getChildren().addAll(confirmBtn, closeBtn);
         closeBtn.setOnMouseClicked(event -> {
             window.close();
         });
+        container.getChildren().add(btnContainer);
         container.getChildren().add(closeBtn);
         Scene scene = new Scene(container, 350, 200);
         window.setScene(scene);

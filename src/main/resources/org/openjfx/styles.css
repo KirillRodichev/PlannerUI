@@ -1,0 +1,55 @@
+.body {
+    -fx-font-family: Roboto;
+    -fx-font-size: 14;
+}
+
+.sideBar {
+    -fx-background-color: #c8c8c8;
+}
+
+.sideBar .link {
+    -fx-text-fill: #373737;
+    -fx-underline: false;
+}
+
+.sideBar .link:hover {
+    -fx-text-fill: #282828;
+    -fx-background-color: #b4b4b4;
+    -fx-underline: false;
+}
+
+.sideBar.link:focused {
+    -fx-text-fill: #282828;
+    -fx-background-color: #b4b4b4;
+    -fx-underline: false;
+}
+
+.separator {
+    -fx-pref-height: 30;
+}
+
+.taskLink {
+    -fx-text-fill: #373737;
+}
+
+.taskLink:hover {
+    -fx-text-fill: #282828;
+}
+
+.taskLink:focused {
+    -fx-text-fill: #282828;
+}
+
+.taskHeader {
+    -fx-font-size: 16;
+    -fx-font-family: "Roboto Medium";
+}
+
+.taskLabel {
+    -fx-pref-height: 30;
+    -fx-pref-width: 100;
+}
+
+.modal__text-field {
+    -fx-pref-width: 100;
+}

@@ -45,4 +45,6 @@ public interface ITask{
     public String toString();
 
     public Object clone() throws CloneNotSupportedException;
+
+    public boolean equals(Object o);
 }

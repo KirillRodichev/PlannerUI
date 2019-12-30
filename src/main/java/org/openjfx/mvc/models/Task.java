@@ -110,4 +110,16 @@ public class Task implements ITask, Cloneable, Serializable {
     public Object clone() throws CloneNotSupportedException {
         return super.clone();
     }
+
+    public boolean equals(Object o) {
+        boolean result = false;
+        try {
+            result = ((Task) o).getName().equals(this.name)
+                    && ((Task) o).getDescription().equals(this.description)
+                    && ((Task) o).getTag().equals(this.tag);
+        } catch (Exception e) {
+            System.out.println("Some field was null");
+        }
+        return result;
+    }
 }

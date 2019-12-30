@@ -35,12 +35,7 @@ public class UserList implements Serializable {
         if (!found) throw new UserIndexOutOfBoundsException("Can't find User with such id");
     }
 
-    /*
-     почему-то remove(Object o) выкидывает исключение. в ошибке пишет, что она возникает в эрэйЛисте,
-     когда совершается переход на next, при проверке был ли элемент изменен. Это все из-за foreach, думаю.
-     Он ведь использует итератор
-    */
-    public void remove(int id) {
+    public void remove(int id) throws UserIndexOutOfBoundsException {
         boolean found = false;
         for (int i = 0; i < this.users.size(); i++) {
             if (this.users.get(i).getId() == id) {

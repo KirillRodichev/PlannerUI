@@ -117,8 +117,9 @@ public class Task implements ITask, Cloneable, Serializable {
             result = ((Task) o).getName().equals(this.name)
                     && ((Task) o).getDescription().equals(this.description)
                     && ((Task) o).getTag().equals(this.tag);
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             System.out.println("Some field was null");
+            return false;
         }
         return result;
     }

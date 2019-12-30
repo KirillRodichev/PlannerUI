@@ -240,19 +240,6 @@ public class User implements Serializable, Selectable {
         if (!removed) throw new TaskIndexOutOfBoundsException("Can't find the task with such id");
     }
 
-    public void finishTaskById(int id) throws TaskIndexOutOfBoundsException {
-        int finishIndex = 0;
-        boolean finished = false;
-        for (; finishIndex < this.tasks.size(); finishIndex++)
-            if (this.tasks.get(finishIndex).getId() == id) {
-                ITask task = this.tasks.get(finishIndex);
-                task.setState(TaskState.FINISHED);
-                tasks.set(finishIndex, task);
-                finished = true;
-            }
-        if (!finished) throw new TaskIndexOutOfBoundsException("Can't find the task with such id");
-    }
-
     public void writeFormat (PrintWriter out) {
         out.printf("\nuserId = %d\nuserName = %s", this.id, this.name);
         ArrayList<ITask> tasksNotInProjects = new ArrayList<>(tasks);

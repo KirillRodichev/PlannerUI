@@ -81,7 +81,7 @@ public class ModalWindow {
                 mItem4.setOnAction(actionEvent -> {
                     result[0] = TaskState.PREPARATION;
                 });
-                MenuItem mItem5 = new MenuItem("waiting");
+                MenuItem mItem5 = new MenuItem("waiting");// очень плохие имена переменных
                 mItem5.setOnAction(actionEvent -> {
                     result[0] = TaskState.WAITING;
                 });

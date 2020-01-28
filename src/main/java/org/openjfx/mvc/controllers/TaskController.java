@@ -1,15 +1,10 @@
 package org.openjfx.mvc.controllers;
 
-import org.openjfx.enums.TaskState;
-import org.openjfx.enums.TaskType;
-import org.openjfx.exceptions.TaskIndexNotFound;
-import org.openjfx.exceptions.UserNotFoundException;
+import org.openjfx.enums.*;
 import org.openjfx.interfaces.ITask;
-import org.openjfx.mvc.models.Project;
-import org.openjfx.mvc.models.Task;
+import org.openjfx.mvc.models.*;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 
 public class TaskController {
@@ -46,7 +41,7 @@ public class TaskController {
         return new Project(name, description, startDate, finishDate, taskType, taskState, tag, tasks);
     }
 
-    public int getTaskIndex(Task task) {
+    public int getTaskIndex(ITask task) {
         return task.getId();
     }
 }

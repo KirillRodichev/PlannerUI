@@ -1,8 +1,8 @@
 package org.openjfx.interfaces;
 
 import java.io.IOException;
-import java.io.Writer;
+import java.io.PrintWriter;
 
 public interface IUser {
-    public void writeFormat (Writer out) throws IOException;
+    public void writeFormat (PrintWriter out) throws IOException;
 }

@@ -9,7 +9,8 @@ import java.io.*;
 import java.util.*;
 
 public class ForTest {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args)
+            throws IOException, ProjectException, UserException {
         UserList model = new UserList();
 
         User user = new User("KupuJIJI");
@@ -32,7 +33,7 @@ public class ForTest {
                 "netCracker"
         ));
 
-        Task task = new Task(
+        ITask task = new Task(
                 "walk with dog", null,
                 null,
                 null,
@@ -41,7 +42,7 @@ public class ForTest {
                 "home"
         );
 
-        Task task1 = new Task(
+        ITask task1 = new Task(
                 "wash the dishes", null,
                 null,
                 null,
@@ -50,7 +51,7 @@ public class ForTest {
                 "home"
         );
 
-        Task task2 = new Task(
+        ITask task2 = new Task(
                 "feed the cat", "don't forget water",
                 null,
                 null,
@@ -60,11 +61,11 @@ public class ForTest {
         );
 
         user.addProject("Home tasks", task, task1, task2);
-        Project project = user.getProjectByIndex(0);
+        ITask project = user.getProjectByIndex(0);
         project.setState(TaskState.IN_PROCESS);
         project.setType(TaskType.GENERAL);
 
-        Task task3 = new Task(
+        ITask task3 = new Task(
                 "by new tires", "not costly",
                 new Date(),
                 null,
@@ -73,7 +74,7 @@ public class ForTest {
                 "car"
         );
 
-        Task task4 = new Task(
+        ITask task4 = new Task(
                 "wash the car", "",
                 new Date(),
                 null,
@@ -83,7 +84,7 @@ public class ForTest {
         );
 
         user.addProject("Car project", task3, task4);
-        Project project1 = user.getProjectByIndex(1);
+        ITask project1 = user.getProjectByIndex(1);
         project1.setType(TaskType.LESS_IMPORTANT);
         project1.setDescription("wait u just dissed me, I'm perplexed");
 
@@ -122,7 +123,7 @@ public class ForTest {
             TaskState.WAITING,
             "gym"
         ));
-        Task task5 = new Task(
+        ITask task5 = new Task(
             "buy some drugs", "near the supermarket",
             null,
             null,
@@ -137,8 +138,8 @@ public class ForTest {
             model.writeFormat(writer);
         }*/
 
-        Project tempProject = new Project("tmp", (ArrayList<ITask>) user.getTasksByTag("home"));
-        Project tempProject1 = new Project("tmp1", (ArrayList<ITask>) user.getTasksByState(TaskState.PREPARATION));
+        ITask tempProject = new Project("tmp", (ArrayList<ITask>) user.getTasksByTag("home"));
+        ITask tempProject1 = new Project("tmp1", (ArrayList<ITask>) user.getTasksByState(TaskState.PREPARATION));
 
         /*try (PrintWriter writer = new PrintWriter(new FileWriter("usersInfo.txt"))) {
             tempProject.writeFormat(writer);
@@ -151,7 +152,7 @@ public class ForTest {
         User Lera = null;
         try {
             Lera = model.getUserByID(2);
-        } catch (UserNotFoundException e) {
+        } catch (UserException e) {
             System.out.println(e.getMessage());
         }
         Lera.addTask(new Task(

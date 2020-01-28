@@ -1,20 +1,20 @@
 package org.openjfx.controllers;
 
-import javafx.event.EventHandler;
-import javafx.event.EventType;
 import javafx.fxml.FXML;
-import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
+import javafx.util.Pair;
+import org.openjfx.FakeData;
+import org.openjfx.constants.TaskFieldConsts;
+import org.openjfx.constants.UIConsts;
 import org.openjfx.enums.TaskState;
 import org.openjfx.enums.TaskType;
-import org.openjfx.exceptions.TaskIndexNotFound;
-import org.openjfx.exceptions.UserNotFoundException;
+import org.openjfx.exceptions.TaskException;
+import org.openjfx.exceptions.UserException;
 import org.openjfx.interfaces.ITask;
 import org.openjfx.mvc.controllers.TaskController;
 import org.openjfx.mvc.controllers.UserController;
@@ -22,93 +22,37 @@ import org.openjfx.mvc.models.Task;
 import org.openjfx.mvc.view.ModalWindow;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
+import java.util.Collection;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MenuController {
+
+    private static final String TASK_LABEL_STYLE = "taskLabel";
+    private static final String TASK_HEADER_STYLE = "taskHeader";
+    private static final String TASK_LINK_STYLE = "taskLink";
+    private static final String ADD_BTN_STYLE = "addBtn";
+    private static final String DELETE_BTN_STYLE = "deleteBtn";
+    private static final String PROJ_CONTAINER_STYLE = "deleteBtn";
 
     private UserController userController;
     private TaskController taskController;
     private int userId;
+
     @FXML
     private ScrollPane scrollView;
+    public Button searchBtn;
+    public TextField searchField;
 
     public MenuController() {
-        this.userController = new UserController();
-        this.taskController = new TaskController();
-        this.userId = userController.actionPushUser("Kirill");
+        userController = new UserController();
+        taskController = new TaskController();
+        userId = userController.actionPushUser("Kirill");
+        ITask[] tasks = FakeData.get();
         try {
-            userController.actionAddTasks(
-                    userId,
-                    taskController.actionCreateTask(
-                            "Kill the Bill",
-                            "Be careful, don't fall into the river",
-                            new Date(),
-                            new Date(2020, Calendar.MARCH, 3),
-                            TaskType.ANY_TIME,
-                            TaskState.WAITING,
-                            "home"
-                    ),
-                    taskController.actionCreateTask(
-                            "Smack the button",
-                            null,
-                            new Date(),
-                            new Date(2021, Calendar.APRIL, 20),
-                            TaskType.LESS_IMPORTANT,
-                            TaskState.IN_PROCESS,
-                            null
-                    ),
-                    taskController.actionCreateTask(
-                            "Say hello to your daddy",
-                            "Some description",
-                            new Date(),
-                            new Date(2109, Calendar.FEBRUARY, 21),
-                            TaskType.LESS_IMPORTANT,
-                            TaskState.IN_PROCESS,
-                            null
-                    ),
-                    taskController.actionCreateTask(
-                            "Do to school",
-                            "Some description",
-                            new Date(),
-                            new Date(2021, Calendar.APRIL, 20),
-                            TaskType.TODAY,
-                            TaskState.FINISHED,
-                            null
-                    ),
-                    taskController.actionCreateTask(
-                            "Go to the Uni",
-                            "Some description",
-                            null,
-                            null,
-                            TaskType.GENERAL,
-                            TaskState.PREPARATION,
-                            null
-                    ),
-                    taskController.actionCreateTask(
-                            "Eat something for breakfast",
-                            "Some description",
-                            null,
-                            null,
-                            TaskType.TODAY,
-                            TaskState.DELAYED,
-                            null
-                    ),
-                    taskController.actionCreateTask(
-                            "Smack the button",
-                            "This button belongs to this app",
-                            new Date(),
-                            new Date(2021, Calendar.APRIL, 20),
-                            TaskType.LESS_IMPORTANT,
-                            TaskState.IN_PROCESS,
-                            null
-                    ),
-                    taskController.actionCreateTask(
-                            "Deploy the App"
-                    )
-            );
-        } catch (UserNotFoundException e) {
-            System.out.println("EXCEPTION in MenuController constructor: " + e.getMessage());
+            userController.actionAddTasks(userId, tasks);
+        } catch (UserException e) {
+            System.out.println(e.getMessage());
         }
     }
 
@@ -134,7 +78,7 @@ public class MenuController {
 
     private void addHeader(String header, FlowPane container) {
         Label containerHeader = new Label(header);
-        containerHeader.getStyleClass().add("taskHeader");
+        containerHeader.getStyleClass().add(TASK_HEADER_STYLE);
         container.getChildren().add(containerHeader);
     }
 
@@ -144,23 +88,66 @@ public class MenuController {
         hyperlink.setOnMouseClicked((event1 -> {
             Object res = ModalWindow.newWindow(windowTitle, windowField);
             hyperlink.setText(res.toString());
-            hyperlink.getStyleClass().remove("addBtn");
+            hyperlink.getStyleClass().remove(ADD_BTN_STYLE);
             int taskIndex = taskController.getTaskIndex((Task) tasks.get(index));
             try {
                 userController.actionSetTaskField(this.userId, taskIndex, windowField, res);
-            } catch (UserNotFoundException e) {
+            } catch (UserException | TaskException e) {
                 e.printStackTrace();
             }
         }));
     }
 
-    private void addLinks(ArrayList<ITask> tasks, FlowPane container) {
+    private Pair<String, Hyperlink> setLinkAndTitle(
+            ArrayList<ITask> tasks, int index, String modalTitle
+    ) {
+        Hyperlink link;
+        String title;
+        String field;
+        switch (modalTitle) {
+            case TaskFieldConsts.NAME:
+                field = tasks.get(index).getName();
+                break;
+            case TaskFieldConsts.DESCRIPTION:
+                field = tasks.get(index).getDescription();
+                break;
+            case TaskFieldConsts.START_DATE:
+                field = tasks.get(index).getStartDate().toString();
+                break;
+            case TaskFieldConsts.FINISH_DATE:
+                field = tasks.get(index).getFinishDate().toString();
+                break;
+            case TaskFieldConsts.TASK_STATE:
+                field = tasks.get(index).getState().toString();
+                break;
+            case TaskFieldConsts.TASK_TYPE:
+                field = tasks.get(index).getType().toString();
+                break;
+            case TaskFieldConsts.TAG:
+                field = tasks.get(index).getTag();
+                break;
+            default:
+                throw new IllegalStateException("Unexpected value: " + modalTitle);
+        }
+        if (field != null) {
+            link = new Hyperlink(field);
+            link.getStyleClass().add(TASK_LINK_STYLE);
+            title = "Set".concat(modalTitle);
+        } else {
+            link = new Hyperlink("add");
+            link.getStyleClass().add(ADD_BTN_STYLE);
+            title = "Add".concat(modalTitle);
+        }
+        return new Pair<>(title, link);
+    }
+
+    private void drawTaskList(ArrayList<ITask> tasks, FlowPane container) {
         Hyperlink[] taskLinks = new Hyperlink[tasks.size()];
         VBox verticalContainer = new VBox();
         GridPane taskInfoContainer = new GridPane();
         for (int i = 0; i < taskLinks.length; i++) {
             taskLinks[i] = new Hyperlink((i + 1) + ". " + tasks.get(i).getName());
-            taskLinks[i].getStyleClass().add("taskLink");
+            taskLinks[i].getStyleClass().add(TASK_LINK_STYLE);
             int finalI = i;
             taskLinks[i].setOnMouseClicked((event) -> {
                         if (!taskInfoContainer.getChildren().isEmpty()) {
@@ -171,166 +158,115 @@ public class MenuController {
                         separator.setStyle("-fx-pref-height: 40;");
                         taskInfoContainer.add(separator, 0, 0);
 
-                        Label label = new Label("Name: ");
-                        label.getStyleClass().add("taskLabel");
-                        taskInfoContainer.add(label, 0, 1);
-                        Hyperlink hyperlink = new Hyperlink(tasks.get(finalI).getName());
-                        hyperlink.getStyleClass().add("taskLink");
+                        Label name = new Label(UIConsts.NAME_LABEL);
+                        name.getStyleClass().add(TASK_LABEL_STYLE);
+                        taskInfoContainer.add(name, 0, 1);
+                        Pair<String, Hyperlink> nameTitleAndLink = setLinkAndTitle(tasks, finalI, TaskFieldConsts.NAME);
+                        String nameTitle = nameTitleAndLink.getKey();
+                        Hyperlink nameLink = nameTitleAndLink.getValue();
                         addOnMouseClickedListener(
-                                hyperlink,
+                                nameLink,
                                 tasks,
-                                "Set name",
-                                "name",
+                                nameTitle,
+                                TaskFieldConsts.NAME,
                                 finalI
                         );
-                        taskInfoContainer.add(hyperlink, 1, 1);
+                        taskInfoContainer.add(nameLink, 1, 1);
 
-                        Label label1 = new Label("Description: ");
-                        label1.getStyleClass().add("taskLabel");
-                        taskInfoContainer.add(label1, 0, 2);
-                        Hyperlink hyperlink1;
-                        String modalWindowTitle;
-                        if (tasks.get(finalI).getDescription() != null) {
-                            hyperlink1 = new Hyperlink(tasks.get(finalI).getDescription());
-                            hyperlink1.getStyleClass().add("taskLink");
-                            modalWindowTitle = "Set description";
-                        } else {
-                            hyperlink1 = new Hyperlink("add");
-                            hyperlink1.getStyleClass().add("addBtn");
-                            modalWindowTitle = "Add description";
-                        }
+                        Label description = new Label(UIConsts.DESCRIPTION_LABEL);
+                        description.getStyleClass().add(TASK_LABEL_STYLE);
+                        taskInfoContainer.add(description, 0, 2);
+                        Pair<String, Hyperlink> descriptionTitleAndLink = setLinkAndTitle(tasks, finalI, TaskFieldConsts.DESCRIPTION);
+                        String descriptionTitle = descriptionTitleAndLink.getKey();
+                        Hyperlink descriptionLink = descriptionTitleAndLink.getValue();
                         addOnMouseClickedListener(
-                                hyperlink1,
+                                descriptionLink,
                                 tasks,
-                                modalWindowTitle,
-                                "description",
+                                descriptionTitle,
+                                TaskFieldConsts.DESCRIPTION,
                                 finalI
                         );
-                        taskInfoContainer.add(hyperlink1, 1, 2);
+                        taskInfoContainer.add(descriptionLink, 1, 2);
 
-                        Label label2 = new Label("Start date: ");
-                        label2.getStyleClass().add("taskLabel");
-                        taskInfoContainer.add(label2, 0, 3);
-                        Hyperlink hyperlink2;
-                        String modalWindowTitle1;
-                        if (tasks.get(finalI).getStartDate() != null) {
-                            modalWindowTitle1 = "Set start date";
-                            hyperlink2 = new Hyperlink(tasks.get(finalI).getStartDate().toString());
-                            hyperlink2.getStyleClass().add("taskLink");
-                        } else {
-                            modalWindowTitle1 = "Add start date";
-                            hyperlink2 = new Hyperlink("add");
-                            hyperlink2.getStyleClass().add("addBtn");
-                        }
+                        Label startDate = new Label(UIConsts.START_DATE_LABEL);
+                        startDate.getStyleClass().add(TASK_LABEL_STYLE);
+                        taskInfoContainer.add(startDate, 0, 3);
+                        Pair<String, Hyperlink> startDateTitleAndLink = setLinkAndTitle(tasks, finalI, TaskFieldConsts.START_DATE);
+                        String startDateTitle = startDateTitleAndLink.getKey();
+                        Hyperlink startDateLink = startDateTitleAndLink.getValue();
                         addOnMouseClickedListener(
-                                hyperlink2,
+                                startDateLink,
                                 tasks,
-                                modalWindowTitle1,
-                                "startDate",
+                                startDateTitle,
+                                TaskFieldConsts.START_DATE,
                                 finalI
                         );
-                        taskInfoContainer.add(hyperlink2, 1, 3);
+                        taskInfoContainer.add(startDateLink, 1, 3);
 
-                        Label label3 = new Label("Finish date: ");
-                        label3.getStyleClass().add("taskLabel");
-                        taskInfoContainer.add(label3, 0, 4);
-                        Hyperlink hyperlink3;
-                        String modalWindowTitle3;
-                        if (tasks.get(finalI).getFinishDate() != null) {
-                            modalWindowTitle3 = "Set finish date";
-                            hyperlink3 = new Hyperlink(tasks.get(finalI).getFinishDate().toString());
-                            hyperlink3.getStyleClass().add("taskLink");
-
-                        } else {
-                            modalWindowTitle3 = "Add finish date";
-                            hyperlink3 = new Hyperlink("add");
-                            hyperlink3.getStyleClass().add("btnAdd");
-                        }
+                        Label finishDate = new Label(UIConsts.FINISH_DATE_LABEL);
+                        finishDate.getStyleClass().add(TASK_LABEL_STYLE);
+                        taskInfoContainer.add(finishDate, 0, 4);
+                        Pair<String, Hyperlink> finishDateTitleAndLink = setLinkAndTitle(tasks, finalI, TaskFieldConsts.FINISH_DATE);
+                        String finishDateTitle = finishDateTitleAndLink.getKey();
+                        Hyperlink finishDateLink = finishDateTitleAndLink.getValue();
                         addOnMouseClickedListener(
-                                hyperlink3,
+                                finishDateLink,
                                 tasks,
-                                modalWindowTitle3,
-                                "finishDate",
+                                finishDateTitle,
+                                TaskFieldConsts.FINISH_DATE,
                                 finalI
                         );
-                        taskInfoContainer.add(hyperlink3, 1, 4);
+                        taskInfoContainer.add(finishDateLink, 1, 4);
 
-
-                        Label label4 = new Label("Type: ");
-                        label4.getStyleClass().add("taskLabel");
-                        taskInfoContainer.add(label4, 0, 5);
-                        String modalWindowTitle4;
-                        Hyperlink hyperlink4;
-                        if (tasks.get(finalI).getType() != null) {
-                            modalWindowTitle4 = "Set type";
-                            hyperlink4 = new Hyperlink(tasks.get(finalI).getType().toString());
-                            hyperlink4.getStyleClass().add("taskLink");
-
-                        } else {
-                            modalWindowTitle4 = "Add type";
-                            hyperlink4 = new Hyperlink("add");
-                            hyperlink4.getStyleClass().add("addBtn");
-                        }
+                        Label taskType = new Label(UIConsts.TYPE_LABEL);
+                        taskType.getStyleClass().add(TASK_LABEL_STYLE);
+                        taskInfoContainer.add(taskType, 0, 5);
+                        Pair<String, Hyperlink> typeTitleAndLink = setLinkAndTitle(tasks, finalI, TaskFieldConsts.TASK_TYPE);
+                        String typeTitle = typeTitleAndLink.getKey();
+                        Hyperlink typeLink = typeTitleAndLink.getValue();
                         addOnMouseClickedListener(
-                                hyperlink4,
+                                typeLink,
                                 tasks,
-                                modalWindowTitle4,
-                                "type",
+                                typeTitle,
+                                TaskFieldConsts.TASK_TYPE,
                                 finalI
                         );
-                        taskInfoContainer.add(hyperlink4, 1, 5);
+                        taskInfoContainer.add(typeLink, 1, 5);
 
 
-                        Label label5 = new Label("State: ");
-                        label5.getStyleClass().add("taskLabel");
-                        taskInfoContainer.add(label5, 0, 6);
-                        String modalWindowTitle5;
-                        Hyperlink hyperlink5;
-                        if (tasks.get(finalI).getState() != null) {
-                            modalWindowTitle5 = "Set state";
-                            hyperlink5 = new Hyperlink(tasks.get(finalI).getState().toString());
-                            hyperlink5.getStyleClass().add("taskLink");
-
-                        } else {
-                            modalWindowTitle5 = "Add state";
-                            hyperlink5 = new Hyperlink("add");
-                            hyperlink5.getStyleClass().add("addBtn");
-                        }
+                        Label taskState = new Label(UIConsts.STATE_LABEL);
+                        taskState.getStyleClass().add(TASK_LABEL_STYLE);
+                        taskInfoContainer.add(taskState, 0, 6);
+                        Pair<String, Hyperlink> stateTitleAndLink = setLinkAndTitle(tasks, finalI, TaskFieldConsts.TASK_STATE);
+                        String stateTitle = stateTitleAndLink.getKey();
+                        Hyperlink stateLink = stateTitleAndLink.getValue();
                         addOnMouseClickedListener(
-                                hyperlink5,
+                                stateLink,
                                 tasks,
-                                modalWindowTitle5,
-                                "state",
+                                stateTitle,
+                                TaskFieldConsts.TASK_STATE,
                                 finalI
                         );
-                        taskInfoContainer.add(hyperlink5, 1, 6);
+                        taskInfoContainer.add(stateLink, 1, 6);
 
-                        Label label6 = new Label("Tag: ");
-                        label6.getStyleClass().add("taskLabel");
-                        taskInfoContainer.add(label6, 0, 7);
-                        String modalWindowTitle6;
-                        Hyperlink hyperlink6;
-                        if (tasks.get(finalI).getTag() != null) {
-                            modalWindowTitle6 = "Set tag";
-                            hyperlink6 = new Hyperlink(tasks.get(finalI).getTag());
-                            hyperlink6.getStyleClass().add("taskLink");
-                        } else {
-                            modalWindowTitle6 = "Add tag";
-                            hyperlink6 = new Hyperlink("add");
-                            hyperlink6.getStyleClass().add("addBtn");
-                        }
+                        Label taskTag = new Label(UIConsts.TAG_LABEL);
+                        taskTag.getStyleClass().add(TASK_LABEL_STYLE);
+                        taskInfoContainer.add(taskTag, 0, 7);
+                        Pair<String, Hyperlink> tagTitleAndLink = setLinkAndTitle(tasks, finalI, TaskFieldConsts.TAG);
+                        String tagTitle = tagTitleAndLink.getKey();
+                        Hyperlink tagLink = tagTitleAndLink.getValue();
                         addOnMouseClickedListener(
-                                hyperlink6,
+                                tagLink,
                                 tasks,
-                                modalWindowTitle6,
-                                "tag",
+                                tagTitle,
+                                TaskFieldConsts.TAG,
                                 finalI
                         );
-                        taskInfoContainer.add(hyperlink6, 1, 7);
+                        taskInfoContainer.add(tagLink, 1, 7);
 
                         if (!taskInfoContainer.getChildren().isEmpty()) {
                             Button deleteTaskBtn = new Button("Delete");
-                            deleteTaskBtn.getStyleClass().add("deleteBtn");
+                            deleteTaskBtn.getStyleClass().add(DELETE_BTN_STYLE);
                             taskInfoContainer.add(deleteTaskBtn, 0, 8);
                             deleteTaskBtn.setOnMouseClicked((event1 -> {
 
@@ -351,16 +287,38 @@ public class MenuController {
         container.getChildren().add(verticalContainer);
     }
 
-    @FXML
-    private void switchToInProcessTasks() throws UserNotFoundException {
+    private <T> void drawContainer(String header, T filter) throws UserException {
         FlowPane container = new FlowPane(Orientation.VERTICAL, 10, 10);
-        addHeader("Tasks in process", container);
-        ArrayList<ITask> tasks = filterTasksByState(
-                (ArrayList<ITask>) userController.actionGetTasksOutOfProjects(this.userId),
-                TaskState.IN_PROCESS
-        );
+        addHeader(header, container);
+
+        ArrayList<ITask> tasks;
+        if (filter instanceof TaskState) {
+            tasks = filterTasksByState(
+                    (ArrayList<ITask>) userController.actionGetTasksOutOfProjects(userId),
+                    (TaskState) filter
+            );
+        } else if (filter instanceof TaskType) {
+            tasks = filterTasksByType(
+                    (ArrayList<ITask>) userController.actionGetTasksOutOfProjects(userId),
+                    (TaskType) filter
+            );
+        } else {
+            tasks = (ArrayList<ITask>) userController.actionGetTasksOutOfProjects(this.userId);
+        }
         if (!tasks.isEmpty()) {
-            addLinks(tasks, container);
+            drawTaskList(tasks, container);
+        } else {
+            addEmptyTasksListMessage(container);
+        }
+        scrollView.setPannable(true);
+        scrollView.setContent(container);
+    }
+
+    private void drawContainer(String header, Collection<ITask> tasks) {
+        FlowPane container = new FlowPane(Orientation.VERTICAL, 10, 10);
+        addHeader(header, container);
+        if (!tasks.isEmpty()) {
+            drawTaskList((ArrayList<ITask>) tasks, container);
         } else {
             addEmptyTasksListMessage(container);
         }
@@ -369,178 +327,77 @@ public class MenuController {
     }
 
     @FXML
-    private void switchToPausedTasks() throws UserNotFoundException {
-        FlowPane container = new FlowPane(Orientation.VERTICAL, 10, 10);
-        addHeader("Paused tasks", container);
-        ArrayList<ITask> tasks = filterTasksByState(
-                (ArrayList<ITask>) userController.actionGetTasksOutOfProjects(this.userId),
-                TaskState.PAUSED
-        );
-        if (!tasks.isEmpty()) {
-            addLinks(tasks, container);
-        } else {
-            addEmptyTasksListMessage(container);
-        }
-        scrollView.setPannable(true);
-        scrollView.setContent(container);
+    private void drawInProcessTasks() throws UserException {
+        drawContainer("Tasks in process", TaskState.IN_PROCESS);
     }
 
     @FXML
-    private void switchToFinishedTasks() throws UserNotFoundException {
-        FlowPane container = new FlowPane(Orientation.VERTICAL, 10, 10);
-        addHeader("Finished tasks", container);
-        ArrayList<ITask> tasks = filterTasksByState(
-                (ArrayList<ITask>) userController.actionGetTasksOutOfProjects(this.userId),
-                TaskState.FINISHED
-        );
-        if (!tasks.isEmpty()) {
-            addLinks(tasks, container);
-        } else {
-            addEmptyTasksListMessage(container);
-        }
-        scrollView.setPannable(true);
-        scrollView.setContent(container);
+    private void drawPausedTasks() throws UserException {
+        drawContainer("Paused tasks", TaskState.PAUSED);
     }
 
     @FXML
-    private void switchToDelayedTasks() throws UserNotFoundException {
-        FlowPane container = new FlowPane(Orientation.VERTICAL, 10, 10);
-        addHeader("Delayed tasks", container);
-        ArrayList<ITask> tasks = filterTasksByState(
-                (ArrayList<ITask>) userController.actionGetTasksOutOfProjects(this.userId),
-                TaskState.IN_PROCESS
-        );
-        if (!tasks.isEmpty()) {
-            addLinks(tasks, container);
-        } else {
-            addEmptyTasksListMessage(container);
-        }
-        scrollView.setPannable(true);
-        scrollView.setContent(container);
+    private void drawFinishedTasks() throws UserException {
+        drawContainer("Finished tasks", TaskState.FINISHED);
     }
 
     @FXML
-    private void switchToPreparationTasks() throws UserNotFoundException {
-        FlowPane container = new FlowPane(Orientation.VERTICAL, 10, 10);
-        addHeader("Tasks in preparation", container);
-        ArrayList<ITask> tasks = filterTasksByState(
-                (ArrayList<ITask>) userController.actionGetTasksOutOfProjects(this.userId),
-                TaskState.PREPARATION
-        );
-        if (!tasks.isEmpty()) {
-            addLinks(tasks, container);
-        } else {
-            addEmptyTasksListMessage(container);
-        }
-        scrollView.setPannable(true);
-        scrollView.setContent(container);
+    private void drawDelayedTasks() throws UserException {
+        drawContainer("Delayed tasks", TaskState.DELAYED);
     }
 
     @FXML
-    private void switchToWaitingTasks() throws UserNotFoundException {
-        FlowPane container = new FlowPane(Orientation.VERTICAL, 10, 10);
-        addHeader("Waiting tasks", container);
-        ArrayList<ITask> tasks = filterTasksByState(
-                (ArrayList<ITask>) userController.actionGetTasksOutOfProjects(this.userId),
-                TaskState.WAITING
-        );
-        if (!tasks.isEmpty()) {
-            addLinks(tasks, container);
-        } else {
-            addEmptyTasksListMessage(container);
-        }
-        scrollView.setPannable(true);
-        scrollView.setContent(container);
+    private void drawPreparationTasks() throws UserException {
+        drawContainer("Tasks in preparation", TaskState.PREPARATION);
     }
 
     @FXML
-    private void switchToTodayTasks() throws UserNotFoundException {
-        FlowPane container = new FlowPane(Orientation.VERTICAL, 10, 10);
-        addHeader("Today tasks", container);
-        ArrayList<ITask> tasks = filterTasksByType(
-                (ArrayList<ITask>) userController.actionGetTasksOutOfProjects(this.userId),
-                TaskType.TODAY
-        );
-        if (!tasks.isEmpty()) {
-            addLinks(tasks, container);
-        } else {
-            addEmptyTasksListMessage(container);
-        }
-        scrollView.setPannable(true);
-        scrollView.setContent(container);
+    private void drawWaitingTasks() throws UserException {
+        drawContainer("Waiting tasks", TaskState.WAITING);
     }
 
     @FXML
-    private void switchToGeneralTasks() throws UserNotFoundException {
-        FlowPane container = new FlowPane(Orientation.VERTICAL, 10, 10);
-        addHeader("General Tasks", container);
-        ArrayList<ITask> tasks = filterTasksByType(
-                (ArrayList<ITask>) userController.actionGetTasksOutOfProjects(this.userId),
-                TaskType.GENERAL
-        );
-        if (!tasks.isEmpty()) {
-            addLinks(tasks, container);
-        } else {
-            addEmptyTasksListMessage(container);
-        }
-        scrollView.setPannable(true);
-        scrollView.setContent(container);
+    private void drawTodayTasks() throws UserException {
+        drawContainer("Today tasks", TaskType.TODAY);
     }
 
     @FXML
-    private void switchToLessImportantTasks() throws UserNotFoundException {
-        FlowPane container = new FlowPane(Orientation.VERTICAL, 10, 10);
-        addHeader("Less important Tasks", container);
-        ArrayList<ITask> tasks = filterTasksByType(
-                (ArrayList<ITask>) userController.actionGetTasksOutOfProjects(this.userId),
-                TaskType.LESS_IMPORTANT
-        );
-        if (!tasks.isEmpty()) {
-            addLinks(tasks, container);
-        } else {
-            addEmptyTasksListMessage(container);
-        }
-        scrollView.setPannable(true);
-        scrollView.setContent(container);
+    private void drawGeneralTasks() throws UserException {
+        drawContainer("General tasks", TaskType.GENERAL);
     }
 
     @FXML
-    private void switchToAnyTimeTasks() throws UserNotFoundException {
-        FlowPane container = new FlowPane(Orientation.VERTICAL, 10, 10);
-        addHeader("Any time Tasks", container);
-        ArrayList<ITask> tasks = filterTasksByType(
-                (ArrayList<ITask>) userController.actionGetTasksOutOfProjects(this.userId),
-                TaskType.ANY_TIME
-        );
-        if (!tasks.isEmpty()) {
-            addLinks(tasks, container);
-        } else {
-            addEmptyTasksListMessage(container);
-        }
-        scrollView.setPannable(true);
-        scrollView.setContent(container);
+    private void drawLessImportantTasks() throws UserException {
+        drawContainer("Less important tasks", TaskType.LESS_IMPORTANT);
     }
 
     @FXML
-    private void switchToTasks() throws UserNotFoundException {
-        FlowPane container = new FlowPane(Orientation.VERTICAL, 10, 10);
-        addHeader("All Tasks", container);
-        ArrayList<ITask> tasks = (ArrayList<ITask>) userController.actionGetTasksOutOfProjects(this.userId);
-        if (!tasks.isEmpty()) {
-            addLinks(tasks, container);
-        } else {
-            addEmptyTasksListMessage(container);
-        }
-        scrollView.setPannable(true);
-        scrollView.setContent(container);
+    private void drawAnyTimeTasks() throws UserException {
+        drawContainer("Any time tasks", TaskType.ANY_TIME);
+    }
+
+    @FXML
+    private void drawAllTasks() throws UserException {
+        drawContainer("All tasks", "filter");
     }
 
     @FXML
     private void switchToProjects() {
         FlowPane container = new FlowPane(Orientation.VERTICAL, 10, 10);
         Label containerHeader = new Label("Projects");
-        containerHeader.setStyle("-fx-font-family: Roboto; -fx-font-size: 16; -fx-padding: 0,0,0,10");
+        containerHeader.getStyleClass().add(PROJ_CONTAINER_STYLE);
         container.getChildren().add(containerHeader);
         scrollView.setContent(container);
+    }
+
+    public void search(MouseEvent event) throws UserException {
+        String text = searchField.getText();
+        if ((text != null && !text.isEmpty())) {
+            System.out.println("ENTERED TEXT: " + searchField.getText());
+            Collection<ITask> res = new ArrayList<>(userController.actionGetTasksByTagSubstring(userId, text));
+            drawContainer("Search result", res);
+        } else {
+            System.out.println("NOTHING ENTERED");
+        }
     }
 }

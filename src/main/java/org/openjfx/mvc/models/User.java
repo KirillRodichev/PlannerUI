@@ -7,7 +7,7 @@ import org.openjfx.interfaces.*;
 import java.io.*;
 import java.util.*;
 
-public class User implements Serializable, Selectable {
+public class User implements Serializable, Selectable, IUser {
     private int id;
     private String name;
     private static int numberOfUsers = 0;
@@ -22,14 +22,14 @@ public class User implements Serializable, Selectable {
         this.projects = new ArrayList<Project>();
     }
 
-    public void addProject(String name, Task... tasks) {
+    public void addProject(String name, ITask... tasks) {
         Project project = new Project(name, tasks);
         this.projects.add(project);
         this.tasks.addAll(Arrays.asList(tasks));
     }
 
     public void setProjectByIndex(int projectIndex, Map<Integer, ITask> indexTaskMap)
-            throws ProjectIndexOutOfBoundsException {
+            throws TaskException {
         Project project = this.projects.get(projectIndex);
         for (int i = 0; i < project.size(); i++) {
             if (indexTaskMap.containsKey(i)) {
@@ -39,104 +39,104 @@ public class User implements Serializable, Selectable {
         this.projects.set(projectIndex, project);
     }
 
-    public void setProjectByIndex(int index, Project project) throws ProjectIndexOutOfBoundsException {
+    public void setProjectByIndex(int index, Project project) throws ProjectException {
         try {
             this.projects.set(index, project);
         } catch (IndexOutOfBoundsException e) {
-            throw new ProjectIndexOutOfBoundsException(e.getMessage());
+            throw new ProjectException(e.getMessage());
         }
     }
 
-    public Project getProjectByIndex(int index) throws ProjectIndexOutOfBoundsException {
+    public Project getProjectByIndex(int index) throws ProjectException {
         try {
             return this.projects.get(index);
         } catch (IndexOutOfBoundsException e) {
-            throw new ProjectIndexOutOfBoundsException(e.getMessage());
+            throw new ProjectException(e.getMessage());
         }
     }
 
     // SET
 
-    public void setTaskByIndex(int index, Task task) throws TaskIndexOutOfBoundsException {
+    public void setTaskByIndex(int index, Task task) throws TaskException {
         try {
             this.tasks.set(index, task);
         } catch (IndexOutOfBoundsException e) {
-            throw new TaskIndexOutOfBoundsException(e.getMessage());
+            throw new TaskException(e.getMessage());
         }
     }
 
-    public void setTaskNameByIndex(int index, String name) throws TaskIndexOutOfBoundsException {
+    public void setTaskNameByIndex(int index, String name) throws TaskException {
         ITask task;
         try {
             task = tasks.get(index);
         } catch (IndexOutOfBoundsException e) {
-            throw new TaskIndexOutOfBoundsException(e.getMessage());
+            throw new TaskException(e.getMessage());
         }
         task.setName(name);
         tasks.set(index, task);
     }
 
-    public void setTaskDescriptionByIndex(int index, String description) throws TaskIndexOutOfBoundsException {
+    public void setTaskDescriptionByIndex(int index, String description) throws TaskException {
         ITask task;
         try {
             task = tasks.get(index);
         } catch (IndexOutOfBoundsException e) {
-            throw new TaskIndexOutOfBoundsException(e.getMessage());
+            throw new TaskException(e.getMessage());
         }
         task.setDescription(description);
         tasks.set(index, task);
     }
 
-    public void setTaskStartDateByIndex(int index, Date date) throws TaskIndexOutOfBoundsException {
+    public void setTaskStartDateByIndex(int index, Date date) throws TaskException {
         ITask task;
         try {
             task = tasks.get(index);
         } catch (IndexOutOfBoundsException e) {
-            throw new TaskIndexOutOfBoundsException(e.getMessage());
+            throw new TaskException(e.getMessage());
         }
         task.setStartDate(date);
         tasks.set(index, task);
     }
 
-    public void setTaskFinishDateByIndex(int index, Date date) throws TaskIndexOutOfBoundsException {
+    public void setTaskFinishDateByIndex(int index, Date date) throws TaskException {
         ITask task;
         try {
             task = tasks.get(index);
         } catch (IndexOutOfBoundsException e) {
-            throw new TaskIndexOutOfBoundsException(e.getMessage());
+            throw new TaskException(e.getMessage());
         }
         task.setFinishDate(date);
         tasks.set(index, task);
     }
 
-    public void setTaskTypeByIndex(int index, TaskType taskType) throws TaskIndexOutOfBoundsException {
+    public void setTaskTypeByIndex(int index, TaskType taskType) throws TaskException {
         ITask task;
         try {
             task = tasks.get(index);
         } catch (IndexOutOfBoundsException e) {
-            throw new TaskIndexOutOfBoundsException(e.getMessage());
+            throw new TaskException(e.getMessage());
         }
         task.setType(taskType);
         tasks.set(index, task);
     }
 
-    public void setTaskStateByIndex(int index, TaskState taskState) throws TaskIndexOutOfBoundsException {
+    public void setTaskStateByIndex(int index, TaskState taskState) throws TaskException {
         ITask task;
         try {
             task = tasks.get(index);
         } catch (IndexOutOfBoundsException e) {
-            throw new TaskIndexOutOfBoundsException(e.getMessage());
+            throw new TaskException(e.getMessage());
         }
         task.setState(taskState);
         tasks.set(index, task);
     }
 
-    public void setTaskTagByIndex(int index, String tag) throws TaskIndexOutOfBoundsException {
+    public void setTaskTagByIndex(int index, String tag) throws TaskException {
         ITask task;
         try {
             task = tasks.get(index);
         } catch (IndexOutOfBoundsException e) {
-            throw new TaskIndexOutOfBoundsException(e.getMessage());
+            throw new TaskException(e.getMessage());
         }
         task.setTag(tag);
         tasks.set(index, task);
@@ -144,13 +144,23 @@ public class User implements Serializable, Selectable {
 
     // END SET
 
-    /*GET*/
+    // GET
 
-    public ITask getTaskByIndex(int index) throws TaskIndexOutOfBoundsException {
+    public Collection<ITask> findBySubstringInTag(String sub) {
+        Collection<ITask> res = new ArrayList<>();
+        for (ITask task : tasks) {
+            if (task.getTag().contains(sub)) {
+                res.add(task);
+            }
+        }
+        return res;
+    }
+
+    public ITask getTaskByIndex(int index) throws TaskException {
         try {
             return tasks.get(index);
         } catch (IndexOutOfBoundsException e) {
-            throw new TaskIndexOutOfBoundsException(e.getMessage());
+            throw new TaskException(e.getMessage());
         }
     }
 
@@ -229,7 +239,7 @@ public class User implements Serializable, Selectable {
         this.tasks.addAll(Arrays.asList(tasks));
     }
 
-    public void removeTaskById(int id) throws TaskIndexOutOfBoundsException {
+    public void removeTaskById(int id) throws TaskException {
         int removeIndex = 0;
         boolean removed = false;
         for (; removeIndex < this.tasks.size(); removeIndex++)
@@ -237,7 +247,7 @@ public class User implements Serializable, Selectable {
                 this.tasks.remove(removeIndex);
                 removed = true;
             }
-        if (!removed) throw new TaskIndexOutOfBoundsException("Can't find the task with such id");
+        if (!removed) throw new TaskException("Can't find the task with such id");
     }
 
     public void writeFormat (PrintWriter out) {

@@ -1,5 +1,6 @@
 package org.openjfx.mvc.controllers;
 
+import org.openjfx.constants.TaskFieldConsts;
 import org.openjfx.enums.*;
 import org.openjfx.exceptions.*;
 import org.openjfx.interfaces.*;
@@ -10,52 +11,52 @@ import java.util.Collection;
 import java.util.Date;
 
 public class UserController {
-    UserList userListModel;
+    private UserList userListModel;
 
     public UserController() {
-        this.userListModel = new UserList();
+        userListModel = new UserList();
     }
 
-    public void actionDeleteUser(int id) {
-        this.userListModel.remove(id);
+    public void actionDeleteUser(int id) throws UserException {
+        userListModel.remove(id);
     }
 
     // ADD ACTIONS
 
     public int actionPushUser(String name) {
-        return this.userListModel.push(new User(name));
+        return userListModel.push(new User(name));
     }
 
-    public void actionAddProject(int userId, String projectName, Task...tasks) throws UserNotFoundException {
-        User user = this.userListModel.getUserByID(userId);
+    public void actionAddProject(int userId, String projectName, ITask...tasks) throws UserException {
+        User user = userListModel.getUserByID(userId);
         user.addProject(projectName, tasks);
-        this.userListModel.setUserById(userId, user);
+        userListModel.setUserById(userId, user);
     }
 
-    public void actionAddProjectTask(int userId, int projectIndex, Task task)
-            throws ProjectIndexOutOfBoundsException, UserNotFoundException {
-        User user = this.userListModel.getUserByID(userId);
+    public void actionAddProjectTask(int userId, int projectIndex, ITask task)
+            throws ProjectException, UserException {
+        User user = userListModel.getUserByID(userId);
         Project project = user.getProjectByIndex(projectIndex);
         project.add(task);
         user.setProjectByIndex(projectIndex, project);
-        this.userListModel.setUserById(userId, user);
+        userListModel.setUserById(userId, user);
     }
 
-    public void actionAddTask(int userId, Task task) throws UserNotFoundException {
-        User user = this.userListModel.getUserByID(userId);
+    public void actionAddTask(int userId, ITask task) throws UserException {
+        User user = userListModel.getUserByID(userId);
         user.addTask(task);
     }
 
-    public void actionAddTasks(int userId, Task ... tasks) throws UserNotFoundException {
-        User user = this.userListModel.getUserByID(userId);
+    public void actionAddTasks(int userId, ITask ... tasks) throws UserException {
+        User user = userListModel.getUserByID(userId);
         user.addTasks(tasks);
     }
 
     // SET ACTIONS
 
     public void actionSet(int userId, int index, ITask task)
-            throws ProjectIndexOutOfBoundsException, TaskIndexOutOfBoundsException, UserNotFoundException {
-        User user = this.userListModel.getUserByID(userId);
+            throws ProjectException, TaskException, UserException {
+        User user = userListModel.getUserByID(userId);
         if (task instanceof Project) {
             user.setProjectByIndex(index, (Project) task);
         } else if (task instanceof Task) {
@@ -63,36 +64,36 @@ public class UserController {
         }
     }
 
-    public void actionSetProjectTask(int userId, int projectIndex, int taskIndex, Task task)
-            throws ProjectIndexOutOfBoundsException, TaskIndexOutOfBoundsException, UserNotFoundException {
-        User user = this.userListModel.getUserByID(userId);
+    public void actionSetProjectTask(int userId, int projectIndex, int taskIndex, ITask task)
+            throws ProjectException, TaskException, UserException {
+        User user = userListModel.getUserByID(userId);
         Project project = user.getProjectByIndex(projectIndex);
         project.setTaskByIndex(taskIndex, task);
         user.setProjectByIndex(projectIndex, project);
-        this.userListModel.setUserById(userId, user);
+        userListModel.setUserById(userId, user);
     }
 
     private <T> void fieldSetter(String fieldName, T field, ITask task) {
         switch (fieldName) {
-            case "name":
+            case TaskFieldConsts.NAME:
                 task.setName((String) field);
                 break;
-            case "description":
+            case TaskFieldConsts.DESCRIPTION:
                 task.setDescription((String) field);
                 break;
-            case "startDate":
+            case TaskFieldConsts.START_DATE:
                 task.setStartDate((Date) field);
                 break;
-            case "finishDate":
+            case TaskFieldConsts.FINISH_DATE:
                 task.setFinishDate((Date) field);
                 break;
-            case "taskType":
+            case TaskFieldConsts.TASK_TYPE:
                 task.setType((TaskType) field);
                 break;
-            case "taskState":
+            case TaskFieldConsts.TASK_STATE:
                 task.setState((TaskState) field);
                 break;
-            case "tag":
+            case TaskFieldConsts.TAG:
                 task.setTag((String) field);
                 break;
             default:
@@ -101,45 +102,45 @@ public class UserController {
     }
 
     public <T> void actionSetProjectTaskField(int userId, int projectIndex, int taskIndex, String fieldName, T field)
-            throws ProjectIndexOutOfBoundsException, TaskIndexOutOfBoundsException, UserNotFoundException {
-        User user = this.userListModel.getUserByID(userId);
+            throws ProjectException, TaskException, UserException {
+        User user = userListModel.getUserByID(userId);
         Project project = user.getProjectByIndex(projectIndex);
         Task task = (Task) project.getTaskByIndex(taskIndex);
         fieldSetter(fieldName, field, task);
         project.setTaskByIndex(taskIndex, task);
         user.setProjectByIndex(projectIndex, project);
-        this.userListModel.setUserById(userId, user);
+        userListModel.setUserById(userId, user);
     }
 
     public <T> void actionSetProjectField(int userId, int projectIndex, String fieldName, T field)
-            throws ProjectIndexOutOfBoundsException, UserNotFoundException {
-        User user = this.userListModel.getUserByID(userId);
+            throws ProjectException, UserException {
+        User user = userListModel.getUserByID(userId);
         Project project = user.getProjectByIndex(projectIndex);
         fieldSetter(fieldName, field, project);
         user.setProjectByIndex(projectIndex, project);
-        this.userListModel.setUserById(userId, user);
+        userListModel.setUserById(userId, user);
     }
 
     public <T> void actionSetTaskField(int userId, int taskIndex, String fieldName, T field)
-            throws TaskIndexOutOfBoundsException, UserNotFoundException {
-        User user = this.userListModel.getUserByID(userId);
+            throws TaskException, UserException {
+        User user = userListModel.getUserByID(userId);
         Task task = (Task) user.getTaskByIndex(taskIndex);
         fieldSetter(fieldName, field, task);
         user.setTaskByIndex(taskIndex, task);
-        this.userListModel.setUserById(userId, user);
+        userListModel.setUserById(userId, user);
     }
 
     private <T> Collection<ITask> collectionSwitcher(String fieldName, T field, Selectable obj) {
         switch (fieldName) {
-            case "startDate":
+            case TaskFieldConsts.START_DATE:
                 return obj.getTasksByStartDate((Date) field);
-            case "finishDate":
+            case TaskFieldConsts.FINISH_DATE:
                 return obj.getTasksByFinishDate((Date) field);
-            case "taskType":
+            case TaskFieldConsts.TASK_TYPE:
                 return obj.getTasksByType((TaskType) field);
-            case "taskState":
+            case TaskFieldConsts.TASK_STATE:
                 return obj.getTasksByState((TaskState) field);
-            case "tag":
+            case TaskFieldConsts.TAG:
                 return obj.getTasksByTag((String) field);
         }
         return null;
@@ -147,43 +148,48 @@ public class UserController {
 
     // GETTERS
 
-    public User actionGetUser(int id) throws UserNotFoundException {
-        return this.userListModel.getUserByID(id);
+    public User actionGetUser(int id) throws UserException {
+        return userListModel.getUserByID(id);
     }
 
-    public <T> Collection<ITask> actionGetProjectTasksByField (int userId, int projectIndex, String fieldName, T field)
-            throws ProjectIndexOutOfBoundsException, UserNotFoundException {
-        User user = this.userListModel.getUserByID(userId);
+    public <T> Collection<ITask> actionGetProjectTasksByField(int userId, int projectIndex, String fieldName, T field)
+            throws ProjectException, UserException {
+        User user = userListModel.getUserByID(userId);
         Project project = user.getProjectByIndex(projectIndex);
         return collectionSwitcher(fieldName, field, project);
     }
 
-    public <T> Collection<ITask> actionGetUserTasksByField (int userId, String fieldName, T field)
-            throws UserNotFoundException {
-        User user = this.userListModel.getUserByID(userId);
+    public <T> Collection<ITask> actionGetUserTasksByField(int userId, String fieldName, T field)
+            throws UserException {
+        User user = userListModel.getUserByID(userId);
         return collectionSwitcher(fieldName, field, user);
     }
 
-    public Collection<ITask> actionGetTasksOutOfProjects(int userId) throws UserNotFoundException {
-        User user = this.userListModel.getUserByID(userId);
+    public Collection<ITask> actionGetTasksOutOfProjects(int userId) throws UserException {
+        User user = userListModel.getUserByID(userId);
         return user.getTasksOutOfProjects();
+    }
+
+    public Collection<ITask> actionGetTasksByTagSubstring(int userId, String sub) throws UserException {
+        User user = userListModel.getUserByID(userId);
+        return user.findBySubstringInTag(sub);
     }
 
     // WRITE FORMAT ACTIONS
 
-    public void actionWriteFormatTask(int userId, int taskIndex, PrintWriter out) throws UserNotFoundException {
-        User user = this.userListModel.getUserByID(userId);
+    public void actionWriteFormatTask(int userId, int taskIndex, PrintWriter out) throws UserException, TaskException {
+        User user = userListModel.getUserByID(userId);
         Task task = (Task) user.getTaskByIndex(taskIndex);
         task.writeFormat(out);
     }
 
-    public void actionWriteFormatProject(int userId, int projectIndex, PrintWriter out) throws UserNotFoundException {
-        User user = this.userListModel.getUserByID(userId);
+    public void actionWriteFormatProject(int userId, int projectIndex, PrintWriter out) throws UserException, ProjectException {
+        User user = userListModel.getUserByID(userId);
         Project project = user.getProjectByIndex(projectIndex);
         project.writeFormat(out);
     }
 
-    public void actionWriteFormatUser(int userId, PrintWriter out) throws UserNotFoundException {
-        this.userListModel.getUserByID(userId).writeFormat(out);
+    public void actionWriteFormatUser(int userId, PrintWriter out) throws UserException {
+        userListModel.getUserByID(userId).writeFormat(out);
     }
 }

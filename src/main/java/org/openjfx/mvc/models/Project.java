@@ -11,7 +11,7 @@ import java.util.*;
 public class Project extends Task implements Cloneable, ITask, Serializable, Selectable {
     private ArrayList<ITask> tasks;
 
-    public Project(String name, Task... tasks) {
+    public Project(String name, ITask... tasks) {
         super(name);
         this.tasks = new ArrayList<>(Arrays.asList(tasks));
     }
@@ -36,49 +36,49 @@ public class Project extends Task implements Cloneable, ITask, Serializable, Sel
 
     // SET
 
-    public void setTaskNameByIndex(int index, String name) throws TaskIndexOutOfBoundsException {
+    public void setTaskNameByIndex(int index, String name) throws TaskException {
         ITask task = tasks.get(index);
         task.setName(name);
         tasks.set(index, task);
     }
 
-    public void setTaskDescriptionByIndex(int index, String description) throws TaskIndexOutOfBoundsException {
+    public void setTaskDescriptionByIndex(int index, String description) throws TaskException {
         ITask task = tasks.get(index);
         task.setDescription(description);
         tasks.set(index, task);
     }
 
-    public void setTaskStartDateByIndex(int index, Date date) throws TaskIndexOutOfBoundsException {
+    public void setTaskStartDateByIndex(int index, Date date) throws TaskException {
         ITask task = tasks.get(index);
         task.setStartDate(date);
         tasks.set(index, task);
     }
 
-    public void setTaskFinishDateByIndex(int index, Date date) throws TaskIndexOutOfBoundsException {
+    public void setTaskFinishDateByIndex(int index, Date date) throws TaskException {
         ITask task = tasks.get(index);
         task.setFinishDate(date);
         tasks.set(index, task);
     }
 
-    public void setTaskTypeByIndex(int index, TaskType taskType) throws TaskIndexOutOfBoundsException {
+    public void setTaskTypeByIndex(int index, TaskType taskType) throws TaskException {
         ITask task = tasks.get(index);
         task.setType(taskType);
         tasks.set(index, task);
     }
 
-    public void setTaskStateByIndex(int index, TaskState taskState) throws TaskIndexOutOfBoundsException {
+    public void setTaskStateByIndex(int index, TaskState taskState) throws TaskException {
         ITask task = tasks.get(index);
         task.setState(taskState);
         tasks.set(index, task);
     }
 
-    public void setTaskTagByIndex(int index, String tag) throws TaskIndexOutOfBoundsException {
+    public void setTaskTagByIndex(int index, String tag) throws TaskException {
         ITask task = tasks.get(index);
         task.setTag(tag);
         tasks.set(index, task);
     }
 
-    public void setTaskByIndex(int index, ITask task) throws TaskIndexOutOfBoundsException {
+    public void setTaskByIndex(int index, ITask task) throws TaskException {
         tasks.set(index, task);
     }
 
@@ -86,7 +86,7 @@ public class Project extends Task implements Cloneable, ITask, Serializable, Sel
 
     /*GET*/
 
-    public ITask getTaskByIndex(int index) throws UserIndexOutOfBoundsException {
+    public ITask getTaskByIndex(int index) throws UserException {
         return tasks.get(index);
     }
 
@@ -144,7 +144,7 @@ public class Project extends Task implements Cloneable, ITask, Serializable, Sel
         this.tasks.add(task);
     }
 
-    public void removeTaskByIndex(int index) throws TaskIndexOutOfBoundsException {
+    public void removeTaskByIndex(int index) throws TaskException {
         this.tasks.remove(index);
     }
 
@@ -209,7 +209,11 @@ public class Project extends Task implements Cloneable, ITask, Serializable, Sel
         cloned.setState(cloned.getState());
         cloned.setTag(cloned.getTag());
         for (int i = 0; i < cloned.size(); i++) {
-            cloned.setTaskByIndex(i, (ITask) cloned.getTaskByIndex(i).clone());
+            try {
+                cloned.setTaskByIndex(i, (ITask) cloned.getTaskByIndex(i).clone());
+            } catch (TaskException | UserException e) {
+                e.printStackTrace();
+            }
         }
         return cloned;
     }

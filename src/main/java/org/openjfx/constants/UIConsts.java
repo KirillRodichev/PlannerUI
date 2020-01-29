@@ -1,6 +1,6 @@
 package org.openjfx.constants;
 
-public class UIConsts {
+public final class UIConsts {
     public static final String NAME_LABEL = "Name: ";
     public static final String DESCRIPTION_LABEL = "Description: ";
     public static final String START_DATE_LABEL = "Start date: ";

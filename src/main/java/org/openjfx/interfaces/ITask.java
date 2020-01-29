@@ -3,8 +3,18 @@ package org.openjfx.interfaces;
 ;
 
 import org.openjfx.enums.*;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.ParseException;
 import java.util.Date;
 
 public interface ITask{
@@ -23,6 +33,8 @@ public interface ITask{
     public void setState(TaskState taskState);
 
     public void setTag(String tag);
+
+    public void setId(int id);
 
     public String getName();
 
@@ -47,4 +59,8 @@ public interface ITask{
     public Object clone() throws CloneNotSupportedException;
 
     public boolean equals(Object o);
+
+    public void writeXML(Document document, Element root, Transformer transformer, DOMSource domSource, StreamResult streamResult) throws TransformerException;
+
+    public void readXML(Document document) throws ParseException;
 }

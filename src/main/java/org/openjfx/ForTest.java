@@ -4,13 +4,24 @@ import org.openjfx.enums.*;
 import org.openjfx.exceptions.*;
 import org.openjfx.interfaces.*;
 import org.openjfx.mvc.models.*;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import java.io.*;
 import java.util.*;
 
 public class ForTest {
     public static void main(String[] args)
-            throws IOException, ProjectException, UserException {
+            throws IOException, ProjectException, UserException, TransformerConfigurationException, ParserConfigurationException, SAXException {
         UserList model = new UserList();
 
         User user = new User("KupuJIJI");
@@ -192,6 +203,73 @@ public class ForTest {
         user.getTaskByIndex(3).writeFormat(new PrintWriter(System.out));*/
 
         //model.writeFormat("usersInfo.txt");
+
+
+        /*
+        WRITE TO XML
+         */
+        DocumentBuilderFactory documentFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder documentBuilder = null;
+        try {
+            documentBuilder = documentFactory.newDocumentBuilder();
+        } catch (Exception e) {
+            System.out.println("Ex");
+        }
+
+        Document document = documentBuilder.newDocument();
+        Element root = document.createElement("userProjects");
+        document.appendChild(root);
+
+        Task t = new Task(
+                "Lera's task",
+                "desc",
+                new Date(),
+                new Date(2130, Calendar.JUNE,6),
+                TaskType.LESS_IMPORTANT,
+                TaskState.WAITING,
+                "super tag"
+        );
+
+        TransformerFactory transformerFactory = TransformerFactory.newInstance();
+        Transformer transformer = transformerFactory.newTransformer();
+        DOMSource domSource = new DOMSource(document);
+        StreamResult streamResult = new StreamResult(new File("userInfo.xml"));
+
+        ITask proj  = new Project("Cool one", task, task1, task2, task3);
+        proj.setDescription("descr");
+        proj.setState(TaskState.FINISHED);
+        proj.setType(TaskType.ANY_TIME);
+        proj.setStartDate(new Date());
+
+
+        /*try {
+            t.writeXML(document, root, transformer, domSource, streamResult);
+            task2.writeXML(document, root, transformer, domSource, streamResult);
+        } catch (Exception e) {
+            System.out.println(e.getStackTrace());
+        }*/
+
+        try {
+            proj.writeXML(document, root, transformer, domSource, streamResult);
+        } catch (Exception e) {
+            System.out.println(e.getStackTrace());
+        }
+
+
+        /*
+        READ FROM XML
+         */
+        File file = new File("userInfo.xml");
+        DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder documentBuilderOut = documentBuilderFactory.newDocumentBuilder();
+        Document documentOut = documentBuilderOut.parse(file);
+
+        Task t1 = new Task();
+        try {
+            t1.readXML(documentOut);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
 
     }
 }

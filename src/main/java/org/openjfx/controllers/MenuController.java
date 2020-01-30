@@ -8,6 +8,7 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Pair;
+import org.openjfx.App;
 import org.openjfx.FakeData;
 import org.openjfx.constants.TaskFieldConsts;
 import org.openjfx.constants.UIConsts;
@@ -21,10 +22,9 @@ import org.openjfx.mvc.controllers.UserController;
 import org.openjfx.mvc.models.Task;
 import org.openjfx.mvc.view.ModalWindow;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class MenuController {
 
@@ -35,14 +35,19 @@ public class MenuController {
     private static final String DELETE_BTN_STYLE = "deleteBtn";
     private static final String PROJ_CONTAINER_STYLE = "deleteBtn";
 
+
     private UserController userController;
     private TaskController taskController;
     private int userId;
 
     @FXML
     private ScrollPane scrollView;
-    public Button searchBtn;
-    public TextField searchField;
+    @FXML
+    private Button searchBtn;
+    @FXML
+    private TextField searchField;
+    @FXML
+    private Button logWithAnotherAccountBtn;
 
     public MenuController() {
         userController = new UserController();
@@ -399,5 +404,9 @@ public class MenuController {
         } else {
             System.out.println("NOTHING ENTERED");
         }
+    }
+
+    public void logWithAnotherAccount(MouseEvent mouseEvent) throws IOException {
+        App.setRoot("login");
     }
 }

@@ -1,10 +1,24 @@
 package org.openjfx.mvc.models;
 
-import org.openjfx.enums.*;
-import org.openjfx.exceptions.*;
-import org.openjfx.interfaces.*;
+import org.openjfx.enums.TaskState;
+import org.openjfx.enums.TaskType;
+import org.openjfx.exceptions.ProjectException;
+import org.openjfx.exceptions.TaskException;
+import org.openjfx.interfaces.ITask;
+import org.openjfx.interfaces.IUser;
+import org.openjfx.interfaces.Selectable;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
-import java.io.*;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import java.io.PrintWriter;
+import java.io.Serializable;
+import java.text.ParseException;
 import java.util.*;
 
 public class User implements Serializable, Selectable, IUser {
@@ -14,12 +28,17 @@ public class User implements Serializable, Selectable, IUser {
     private ArrayList<ITask> tasks;
     private ArrayList<Project> projects;
 
-    public User(String name) {
+    public User() {
+        this.id = User.numberOfUsers;
         User.numberOfUsers++;
-        this.id = User.numberOfUsers - 1;
+    }
+
+    public User(String name) {
+        this.id = User.numberOfUsers;
+        User.numberOfUsers++;
         this.name = name;
-        this.tasks = new ArrayList<ITask>();
-        this.projects = new ArrayList<Project>();
+        this.tasks = new ArrayList<>();
+        this.projects = new ArrayList<>();
     }
 
     public void addProject(String name, ITask... tasks) {
@@ -290,5 +309,63 @@ public class User implements Serializable, Selectable, IUser {
             buf.append(iProject.toString());
         buf.append("))");
         return buf.toString();
+    }
+
+    public void writeXML(Document document, Element root, Transformer transformer, DOMSource domSource, StreamResult streamResult)
+            throws TransformerException {
+        Element user = document.createElement("user");
+        root.appendChild(user);
+        user.setAttribute("id", String.valueOf(this.id));
+
+        Element userName = document.createElement("name");
+        userName.appendChild(document.createTextNode(String.valueOf(name)));
+        user.appendChild(userName);
+
+        Element tasksOutOfProjects = document.createElement("tasksOutOfProjects");
+        user.appendChild(tasksOutOfProjects);
+        Collection<ITask> tasksOutOfProjectsArr = new ArrayList<>(tasks);
+        for (Project iProject : this.projects) {
+            for (ITask iTask : iProject.getTasks()) {
+                tasksOutOfProjectsArr.remove(iTask);
+            }
+        }
+        for (ITask task : tasksOutOfProjectsArr) {
+            task.writeXML(document, tasksOutOfProjects, transformer, domSource, streamResult);
+        }
+
+        Element projects = document.createElement("projects");
+        user.appendChild(projects);
+        for (Project iProject : this.projects) {
+            iProject.writeXML(document, projects, transformer, domSource, streamResult);
+        }
+
+        transformer.transform(domSource, streamResult);
+    }
+
+    public void readXML(Element eElement) throws ParseException {
+        id = Integer.parseInt(eElement.getAttribute("id"));
+        name = eElement.getElementsByTagName("name").item(0).getTextContent();
+
+        NodeList taskList = eElement.getElementsByTagName("task");
+        tasks = new ArrayList<>();
+        for (int i = 0; i < taskList.getLength(); i++) {
+            Node node = taskList.item(i);
+            if (node.getNodeType() == Node.ELEMENT_NODE) {
+                ITask tmpTask = new Task();
+                tmpTask.readXML((Element) node);
+                tasks.add(tmpTask);
+            }
+        }
+
+        NodeList projectList = eElement.getElementsByTagName("project");
+        projects = new ArrayList<>();
+        for (int i = 0; i < projectList.getLength(); i++) {
+            Node node = projectList.item(i);
+            if (node.getNodeType() == Node.ELEMENT_NODE) {
+                Project tmpProject = new Project();
+                tmpProject.readXML((Element) node);
+                projects.add(tmpProject);
+            }
+        }
     }
 }

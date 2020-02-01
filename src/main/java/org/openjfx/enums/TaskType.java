@@ -16,15 +16,6 @@ public enum TaskType {
         return levelCode;
     }
 
-    public static TaskType byLvl(int lvl) {
-        for (TaskType type : TaskType.values()) {
-            if (type.levelCode == lvl) {
-                return type;
-            }
-        }
-        return null;
-    }
-
     public static final TaskType[] TASK_TYPES = new TaskType[] {
             TODAY,
             GENERAL,

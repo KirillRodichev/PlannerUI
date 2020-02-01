@@ -1,6 +1,6 @@
 package org.openjfx.mvc.controllers;
 
-import org.openjfx.constants.TaskFieldConsts;
+import org.openjfx.constants.TaskFieldNames;
 import org.openjfx.enums.*;
 import org.openjfx.exceptions.*;
 import org.openjfx.interfaces.*;
@@ -75,25 +75,25 @@ public class UserController {
 
     private <T> void fieldSetter(String fieldName, T field, ITask task) {
         switch (fieldName) {
-            case TaskFieldConsts.NAME:
+            case TaskFieldNames.NAME:
                 task.setName((String) field);
                 break;
-            case TaskFieldConsts.DESCRIPTION:
+            case TaskFieldNames.DESCRIPTION:
                 task.setDescription((String) field);
                 break;
-            case TaskFieldConsts.START_DATE:
+            case TaskFieldNames.START_DATE:
                 task.setStartDate((Date) field);
                 break;
-            case TaskFieldConsts.FINISH_DATE:
+            case TaskFieldNames.FINISH_DATE:
                 task.setFinishDate((Date) field);
                 break;
-            case TaskFieldConsts.TASK_TYPE:
+            case TaskFieldNames.TASK_TYPE:
                 task.setType((TaskType) field);
                 break;
-            case TaskFieldConsts.TASK_STATE:
+            case TaskFieldNames.TASK_STATE:
                 task.setState((TaskState) field);
                 break;
-            case TaskFieldConsts.TAG:
+            case TaskFieldNames.TAG:
                 task.setTag((String) field);
                 break;
             default:
@@ -132,15 +132,15 @@ public class UserController {
 
     private <T> Collection<ITask> collectionSwitcher(String fieldName, T field, Selectable obj) {
         switch (fieldName) {
-            case TaskFieldConsts.START_DATE:
+            case TaskFieldNames.START_DATE:
                 return obj.getTasksByStartDate((Date) field);
-            case TaskFieldConsts.FINISH_DATE:
+            case TaskFieldNames.FINISH_DATE:
                 return obj.getTasksByFinishDate((Date) field);
-            case TaskFieldConsts.TASK_TYPE:
+            case TaskFieldNames.TASK_TYPE:
                 return obj.getTasksByType((TaskType) field);
-            case TaskFieldConsts.TASK_STATE:
+            case TaskFieldNames.TASK_STATE:
                 return obj.getTasksByState((TaskState) field);
-            case TaskFieldConsts.TAG:
+            case TaskFieldNames.TAG:
                 return obj.getTasksByTag((String) field);
         }
         return null;

@@ -62,5 +62,5 @@ public interface ITask{
 
     public void writeXML(Document document, Element root, Transformer transformer, DOMSource domSource, StreamResult streamResult) throws TransformerException;
 
-    public void readXML(Document document) throws ParseException;
+    public void readXML(Element element) throws ParseException;
 }

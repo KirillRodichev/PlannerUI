@@ -1,31 +1,22 @@
 package org.openjfx.mvc.models;
 
-import org.openjfx.constants.TaskFieldConsts;
-import org.openjfx.enums.*;
-import org.openjfx.interfaces.*;
+import org.openjfx.constants.TaskFieldNames;
+import org.openjfx.enums.TaskState;
+import org.openjfx.enums.TaskType;
+import org.openjfx.interfaces.ITask;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
-import java.io.File;
-import java.io.IOException;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import java.io.PrintWriter;
 import java.io.Serializable;
-import java.lang.annotation.Documented;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
-
-import org.w3c.dom.*;
-import org.xml.sax.SAXException;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 
 public class Task implements ITask, Cloneable, Serializable {
     private int id;
@@ -39,10 +30,14 @@ public class Task implements ITask, Cloneable, Serializable {
     private static int numberOfTasks;
 
     public Task() {
+        this.id = Task.numberOfTasks;
+        Task.numberOfTasks++;
     }
 
     public Task(String name) {
         this.name = name;
+        this.id = Task.numberOfTasks;
+        Task.numberOfTasks++;
     }
 
     public Task(
@@ -171,16 +166,46 @@ public class Task implements ITask, Cloneable, Serializable {
     }
 
     public boolean equals(Object o) {
-        boolean result = false;
-        try {
-            result = ((Task) o).getName().equals(this.name)
-                    && ((Task) o).getDescription().equals(this.description)
-                    && ((Task) o).getTag().equals(this.tag);
-        } catch (NullPointerException e) {
-            System.out.println("Some field was null");
-            return false;
+        if (this == o) {
+            return true;
         }
-        return result;
+        if (o instanceof Task) {
+            Task aTask = (Task) o;
+            return (aTask).getName().equals(this.name)
+                    && (aTask).getDescription().equals(this.description)
+                    && (aTask).getTag().equals(this.tag);
+        }
+        return false;
+    }
+
+    private void fillTaskFields(Element root, Document document) {
+        String[] fieldValues = new String[]{
+                this.name,
+                this.description,
+                String.valueOf(this.startDate),
+                String.valueOf(this.finishDate),
+                String.valueOf(this.taskType),
+                String.valueOf(this.taskState),
+                this.tag
+        };
+        for (int i = 0; i < TaskFieldNames.FIELDS.length; i++) {
+            Element element = document.createElement(TaskFieldNames.FIELDS[i]);
+            element.appendChild(document.createTextNode(fieldValues[i]));
+            if (TaskFieldNames.FIELDS[i].equals(TaskFieldNames.TASK_TYPE)) {
+                if (this.taskType == null) {
+                    element.setAttribute("levelCode", "-1");
+                } else {
+                    element.setAttribute("levelCode", String.valueOf(this.taskType.getLevelCode()));
+                }
+            } else if (TaskFieldNames.FIELDS[i].equals(TaskFieldNames.TASK_STATE)) {
+                if (this.taskState == null) {
+                    element.setAttribute("levelCode", "-1");
+                } else {
+                    element.setAttribute("levelCode", String.valueOf(this.taskState.getLevelCode()));
+                }
+            }
+            root.appendChild(element);
+        }
     }
 
     public void writeXML(
@@ -191,34 +216,35 @@ public class Task implements ITask, Cloneable, Serializable {
         root.appendChild(task);
         task.setAttribute("id", String.valueOf(this.id));
 
-        Element name = document.createElement(TaskFieldConsts.NAME);
-        name.appendChild(document.createTextNode(this.name));
-        task.appendChild(name);
-        Element description = document.createElement(TaskFieldConsts.DESCRIPTION);
-        description.appendChild(document.createTextNode(this.description));
-        task.appendChild(description);
-        Element startDate = document.createElement(TaskFieldConsts.START_DATE);
-        startDate.appendChild(document.createTextNode(String.valueOf(this.startDate)));
-        task.appendChild(startDate);
-        Element finishDate = document.createElement(TaskFieldConsts.FINISH_DATE);
-        finishDate.appendChild(document.createTextNode(String.valueOf(this.finishDate)));
-        task.appendChild(finishDate);
-        Element taskType = document.createElement(TaskFieldConsts.TASK_TYPE);
-        taskType.appendChild(document.createTextNode(String.valueOf(this.taskType)));
-        taskType.setAttribute("levelCode", String.valueOf(this.taskType.getLevelCode()));
-        task.appendChild(taskType);
-        Element taskState = document.createElement(TaskFieldConsts.TASK_STATE);
-        taskState.appendChild(document.createTextNode(String.valueOf(this.taskState)));
-        taskState.setAttribute("levelCode", String.valueOf(this.taskState.getLevelCode()));
-        task.appendChild(taskState);
-        Element tag = document.createElement(TaskFieldConsts.TAG);
-        tag.appendChild(document.createTextNode(String.valueOf(this.tag)));
-        task.appendChild(tag);
+        fillTaskFields(task, document);
 
         transformer.transform(domSource, streamResult);
     }
 
-    public void readXML(Document document) throws ParseException {
+    public void readXML(Element eElement) throws ParseException {
+
+        SimpleDateFormat formatter = new SimpleDateFormat("E MMM dd HH:mm:ss z yyyy", Locale.ENGLISH);
+
+        id = Integer.parseInt(eElement.getAttribute("id"));
+        name = eElement.getElementsByTagName(TaskFieldNames.NAME).item(0).getTextContent();
+        description = eElement.getElementsByTagName(TaskFieldNames.DESCRIPTION).item(0).getTextContent();
+        startDate = !eElement.getElementsByTagName(TaskFieldNames.START_DATE).item(0).getTextContent().equals("null")
+                ? formatter.parse(eElement.getElementsByTagName(TaskFieldNames.START_DATE).item(0).getTextContent())
+                : null;
+        finishDate = !eElement.getElementsByTagName(TaskFieldNames.FINISH_DATE).item(0).getTextContent().equals("null")
+                ? formatter.parse(eElement.getElementsByTagName(TaskFieldNames.FINISH_DATE).item(0).getTextContent())
+                : null;
+        taskType = Integer.parseInt(eElement.getElementsByTagName(TaskFieldNames.TASK_TYPE).item(0).getAttributes().getNamedItem("levelCode").getNodeValue()) >= 0
+                ? TaskType.TASK_TYPES[Integer.parseInt(eElement.getElementsByTagName(TaskFieldNames.TASK_TYPE).item(0).getAttributes().getNamedItem("levelCode").getNodeValue())]
+                : null;
+        taskState = Integer.parseInt(eElement.getElementsByTagName(TaskFieldNames.TASK_STATE).item(0).getAttributes().getNamedItem("levelCode").getNodeValue()) >= 0
+                ? TaskState.TASK_STATES[Integer.parseInt(eElement.getElementsByTagName(TaskFieldNames.TASK_STATE).item(0).getAttributes().getNamedItem("levelCode").getNodeValue())]
+                : null;
+        tag = eElement.getElementsByTagName(TaskFieldNames.TAG).item(0).getTextContent();
+    }
+}
+
+    /*public void readXML(Document document, int taskId) throws ParseException {
         document.getDocumentElement().normalize();
 
         NodeList nodeList = document.getElementsByTagName("task");
@@ -226,8 +252,8 @@ public class Task implements ITask, Cloneable, Serializable {
 
         for (int i = 0; i < nodeList.getLength(); i++) {
             Node node = nodeList.item(i);
-            System.out.println("\nNode Name :" + node.getNodeName());
-            if (node.getNodeType() == Node.ELEMENT_NODE) {
+            if (node.getNodeType() == Node.ELEMENT_NODE
+                    && taskId == Integer.parseInt(((Element) node).getAttribute("id"))) {
                 Element eElement = (Element) node;
                 id = Integer.parseInt(eElement.getAttribute("id"));
                 name = eElement.getElementsByTagName(TaskFieldConsts.NAME).item(0).getTextContent();
@@ -243,6 +269,4 @@ public class Task implements ITask, Cloneable, Serializable {
                 tag = eElement.getElementsByTagName(TaskFieldConsts.TAG).item(0).getTextContent();
             }
         }
-    }
-
-}
+    }*/

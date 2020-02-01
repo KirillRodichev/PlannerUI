@@ -6,6 +6,8 @@ import org.openjfx.interfaces.*;
 import org.openjfx.mvc.models.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -17,11 +19,12 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.*;
+import java.text.ParseException;
 import java.util.*;
 
 public class ForTest {
     public static void main(String[] args)
-            throws IOException, ProjectException, UserException, TransformerConfigurationException, ParserConfigurationException, SAXException {
+            throws IOException, ProjectException, UserException, TransformerConfigurationException, ParserConfigurationException, SAXException, ParseException {
         UserList model = new UserList();
 
         User user = new User("KupuJIJI");
@@ -241,7 +244,9 @@ public class ForTest {
         proj.setType(TaskType.ANY_TIME);
         proj.setStartDate(new Date());
 
-
+        /*
+        TASK TO XML
+         */
         /*try {
             t.writeXML(document, root, transformer, domSource, streamResult);
             task2.writeXML(document, root, transformer, domSource, streamResult);
@@ -249,27 +254,42 @@ public class ForTest {
             System.out.println(e.getStackTrace());
         }*/
 
-        try {
+        /*
+        PROJECT TO XML
+         */
+        /*try {
             proj.writeXML(document, root, transformer, domSource, streamResult);
         } catch (Exception e) {
             System.out.println(e.getStackTrace());
-        }
+        }*/
 
+        /*
+        USER TO XML
+         */
+        try {
+            user.writeXML(document, root, transformer, domSource, streamResult);
+        } catch (Exception e) {
+            System.out.println(e.getMessage() + "exexexe");
+        }
 
         /*
         READ FROM XML
          */
+        ITask projecticus = new Project();
+        User userus = new User();
+
         File file = new File("userInfo.xml");
         DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder documentBuilderOut = documentBuilderFactory.newDocumentBuilder();
         Document documentOut = documentBuilderOut.parse(file);
 
-        Task t1 = new Task();
-        try {
-            t1.readXML(documentOut);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
+        NodeList nodeList = documentOut.getElementsByTagName("user");
 
+        for (int i = 0; i < nodeList.getLength(); i++) {
+            Node node = nodeList.item(i);
+            if (node.getNodeType() == Node.ELEMENT_NODE) {
+                userus.readXML((Element) node);
+            }
+        }
     }
 }

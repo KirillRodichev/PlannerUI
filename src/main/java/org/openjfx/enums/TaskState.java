@@ -18,15 +18,6 @@ public enum TaskState {
         return levelCode;
     }
 
-    public static TaskState byLvl(int lvl) {
-        for (TaskState state : TaskState.values()) {
-            if (state.levelCode == lvl) {
-                return state;
-            }
-        }
-        return null;
-    }
-
     public static final TaskState[] TASK_STATES = new TaskState[] {
             IN_PROCESS,
             PAUSED,

@@ -10,7 +10,7 @@ import javafx.scene.layout.VBox;
 import javafx.util.Pair;
 import org.openjfx.App;
 import org.openjfx.FakeData;
-import org.openjfx.constants.TaskFieldConsts;
+import org.openjfx.constants.TaskFieldNames;
 import org.openjfx.constants.UIConsts;
 import org.openjfx.enums.TaskState;
 import org.openjfx.enums.TaskType;
@@ -110,25 +110,25 @@ public class MenuController {
         String title;
         String field;
         switch (modalTitle) {
-            case TaskFieldConsts.NAME:
+            case TaskFieldNames.NAME:
                 field = tasks.get(index).getName();
                 break;
-            case TaskFieldConsts.DESCRIPTION:
+            case TaskFieldNames.DESCRIPTION:
                 field = tasks.get(index).getDescription();
                 break;
-            case TaskFieldConsts.START_DATE:
+            case TaskFieldNames.START_DATE:
                 field = tasks.get(index).getStartDate().toString();
                 break;
-            case TaskFieldConsts.FINISH_DATE:
+            case TaskFieldNames.FINISH_DATE:
                 field = tasks.get(index).getFinishDate().toString();
                 break;
-            case TaskFieldConsts.TASK_STATE:
+            case TaskFieldNames.TASK_STATE:
                 field = tasks.get(index).getState().toString();
                 break;
-            case TaskFieldConsts.TASK_TYPE:
+            case TaskFieldNames.TASK_TYPE:
                 field = tasks.get(index).getType().toString();
                 break;
-            case TaskFieldConsts.TAG:
+            case TaskFieldNames.TAG:
                 field = tasks.get(index).getTag();
                 break;
             default:
@@ -166,14 +166,14 @@ public class MenuController {
                         Label name = new Label(UIConsts.NAME_LABEL);
                         name.getStyleClass().add(TASK_LABEL_STYLE);
                         taskInfoContainer.add(name, 0, 1);
-                        Pair<String, Hyperlink> nameTitleAndLink = setLinkAndTitle(tasks, finalI, TaskFieldConsts.NAME);
+                        Pair<String, Hyperlink> nameTitleAndLink = setLinkAndTitle(tasks, finalI, TaskFieldNames.NAME);
                         String nameTitle = nameTitleAndLink.getKey();
                         Hyperlink nameLink = nameTitleAndLink.getValue();
                         addOnMouseClickedListener(
                                 nameLink,
                                 tasks,
                                 nameTitle,
-                                TaskFieldConsts.NAME,
+                                TaskFieldNames.NAME,
                                 finalI
                         );
                         taskInfoContainer.add(nameLink, 1, 1);
@@ -181,14 +181,14 @@ public class MenuController {
                         Label description = new Label(UIConsts.DESCRIPTION_LABEL);
                         description.getStyleClass().add(TASK_LABEL_STYLE);
                         taskInfoContainer.add(description, 0, 2);
-                        Pair<String, Hyperlink> descriptionTitleAndLink = setLinkAndTitle(tasks, finalI, TaskFieldConsts.DESCRIPTION);
+                        Pair<String, Hyperlink> descriptionTitleAndLink = setLinkAndTitle(tasks, finalI, TaskFieldNames.DESCRIPTION);
                         String descriptionTitle = descriptionTitleAndLink.getKey();
                         Hyperlink descriptionLink = descriptionTitleAndLink.getValue();
                         addOnMouseClickedListener(
                                 descriptionLink,
                                 tasks,
                                 descriptionTitle,
-                                TaskFieldConsts.DESCRIPTION,
+                                TaskFieldNames.DESCRIPTION,
                                 finalI
                         );
                         taskInfoContainer.add(descriptionLink, 1, 2);
@@ -196,14 +196,14 @@ public class MenuController {
                         Label startDate = new Label(UIConsts.START_DATE_LABEL);
                         startDate.getStyleClass().add(TASK_LABEL_STYLE);
                         taskInfoContainer.add(startDate, 0, 3);
-                        Pair<String, Hyperlink> startDateTitleAndLink = setLinkAndTitle(tasks, finalI, TaskFieldConsts.START_DATE);
+                        Pair<String, Hyperlink> startDateTitleAndLink = setLinkAndTitle(tasks, finalI, TaskFieldNames.START_DATE);
                         String startDateTitle = startDateTitleAndLink.getKey();
                         Hyperlink startDateLink = startDateTitleAndLink.getValue();
                         addOnMouseClickedListener(
                                 startDateLink,
                                 tasks,
                                 startDateTitle,
-                                TaskFieldConsts.START_DATE,
+                                TaskFieldNames.START_DATE,
                                 finalI
                         );
                         taskInfoContainer.add(startDateLink, 1, 3);
@@ -211,14 +211,14 @@ public class MenuController {
                         Label finishDate = new Label(UIConsts.FINISH_DATE_LABEL);
                         finishDate.getStyleClass().add(TASK_LABEL_STYLE);
                         taskInfoContainer.add(finishDate, 0, 4);
-                        Pair<String, Hyperlink> finishDateTitleAndLink = setLinkAndTitle(tasks, finalI, TaskFieldConsts.FINISH_DATE);
+                        Pair<String, Hyperlink> finishDateTitleAndLink = setLinkAndTitle(tasks, finalI, TaskFieldNames.FINISH_DATE);
                         String finishDateTitle = finishDateTitleAndLink.getKey();
                         Hyperlink finishDateLink = finishDateTitleAndLink.getValue();
                         addOnMouseClickedListener(
                                 finishDateLink,
                                 tasks,
                                 finishDateTitle,
-                                TaskFieldConsts.FINISH_DATE,
+                                TaskFieldNames.FINISH_DATE,
                                 finalI
                         );
                         taskInfoContainer.add(finishDateLink, 1, 4);
@@ -226,14 +226,14 @@ public class MenuController {
                         Label taskType = new Label(UIConsts.TYPE_LABEL);
                         taskType.getStyleClass().add(TASK_LABEL_STYLE);
                         taskInfoContainer.add(taskType, 0, 5);
-                        Pair<String, Hyperlink> typeTitleAndLink = setLinkAndTitle(tasks, finalI, TaskFieldConsts.TASK_TYPE);
+                        Pair<String, Hyperlink> typeTitleAndLink = setLinkAndTitle(tasks, finalI, TaskFieldNames.TASK_TYPE);
                         String typeTitle = typeTitleAndLink.getKey();
                         Hyperlink typeLink = typeTitleAndLink.getValue();
                         addOnMouseClickedListener(
                                 typeLink,
                                 tasks,
                                 typeTitle,
-                                TaskFieldConsts.TASK_TYPE,
+                                TaskFieldNames.TASK_TYPE,
                                 finalI
                         );
                         taskInfoContainer.add(typeLink, 1, 5);
@@ -242,14 +242,14 @@ public class MenuController {
                         Label taskState = new Label(UIConsts.STATE_LABEL);
                         taskState.getStyleClass().add(TASK_LABEL_STYLE);
                         taskInfoContainer.add(taskState, 0, 6);
-                        Pair<String, Hyperlink> stateTitleAndLink = setLinkAndTitle(tasks, finalI, TaskFieldConsts.TASK_STATE);
+                        Pair<String, Hyperlink> stateTitleAndLink = setLinkAndTitle(tasks, finalI, TaskFieldNames.TASK_STATE);
                         String stateTitle = stateTitleAndLink.getKey();
                         Hyperlink stateLink = stateTitleAndLink.getValue();
                         addOnMouseClickedListener(
                                 stateLink,
                                 tasks,
                                 stateTitle,
-                                TaskFieldConsts.TASK_STATE,
+                                TaskFieldNames.TASK_STATE,
                                 finalI
                         );
                         taskInfoContainer.add(stateLink, 1, 6);
@@ -257,14 +257,14 @@ public class MenuController {
                         Label taskTag = new Label(UIConsts.TAG_LABEL);
                         taskTag.getStyleClass().add(TASK_LABEL_STYLE);
                         taskInfoContainer.add(taskTag, 0, 7);
-                        Pair<String, Hyperlink> tagTitleAndLink = setLinkAndTitle(tasks, finalI, TaskFieldConsts.TAG);
+                        Pair<String, Hyperlink> tagTitleAndLink = setLinkAndTitle(tasks, finalI, TaskFieldNames.TAG);
                         String tagTitle = tagTitleAndLink.getKey();
                         Hyperlink tagLink = tagTitleAndLink.getValue();
                         addOnMouseClickedListener(
                                 tagLink,
                                 tasks,
                                 tagTitle,
-                                TaskFieldConsts.TAG,
+                                TaskFieldNames.TAG,
                                 finalI
                         );
                         taskInfoContainer.add(tagLink, 1, 7);

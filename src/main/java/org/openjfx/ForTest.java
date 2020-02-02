@@ -3,6 +3,7 @@ package org.openjfx;
 import org.openjfx.enums.*;
 import org.openjfx.exceptions.*;
 import org.openjfx.interfaces.*;
+import org.openjfx.mvc.controllers.UserController;
 import org.openjfx.mvc.models.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -15,6 +16,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
@@ -24,10 +26,11 @@ import java.util.*;
 
 public class ForTest {
     public static void main(String[] args)
-            throws IOException, ProjectException, UserException, TransformerConfigurationException, ParserConfigurationException, SAXException, ParseException {
-        UserList model = new UserList();
+            throws IOException, ProjectException, UserException, TransformerException, ParserConfigurationException, SAXException, ParseException {
+        UserList userList = new UserList();
 
         User user = new User("KupuJIJI");
+        User user2 = new User("Oleg");
 
         user.addTask(new Task(
                 "Kill the Bill", "using knife",
@@ -75,6 +78,9 @@ public class ForTest {
         );
 
         user.addProject("Home tasks", task, task1, task2);
+        user2.addTask(task);
+        user2.addProject("Some tasks", task1, task2);
+        
         ITask project = user.getProjectByIndex(0);
         project.setState(TaskState.IN_PROCESS);
         project.setType(TaskType.GENERAL);
@@ -102,7 +108,7 @@ public class ForTest {
         project1.setType(TaskType.LESS_IMPORTANT);
         project1.setDescription("wait u just dissed me, I'm perplexed");
 
-        model.push(user);
+        userList.push(user);
 
         /*try (PrintWriter writer = new PrintWriter(new FileWriter("usersInfo.txt"))) {
             //user.writeFormat(writer);
@@ -146,10 +152,10 @@ public class ForTest {
             "health"
         );
         user1.addProject("Health care", task5);
-        model.push(user1);
+        userList.push(user1);
 
         /*try (PrintWriter writer = new PrintWriter(new FileWriter("usersInfo.txt"))) {
-            model.writeFormat(writer);
+            userList.writeFormat(writer);
         }*/
 
         ITask tempProject = new Project("tmp", (ArrayList<ITask>) user.getTasksByTag("home"));
@@ -160,12 +166,13 @@ public class ForTest {
             tempProject1.writeFormat(writer);
         }*/
 
-        model.remove(1);
+        userList.remove(user1.getId());
+        userList.push(user1);
 
-        model.push(new User("Lera"));
+        userList.push(new User("Lera"));
         User Lera = null;
         try {
-            Lera = model.getUserByID(2);
+            Lera = userList.getUserByID(user1.getId());
         } catch (UserException e) {
             System.out.println(e.getMessage());
         }
@@ -176,23 +183,23 @@ public class ForTest {
                 TaskState.WAITING,
                 "super tag"
         ));
-        model.setUserById(2, Lera);
+        userList.setUserById(2, Lera);
 
         /*try (PrintWriter writer = new PrintWriter(new FileWriter("usersInfo.txt"))) {
-            model.writeFormat(writer);
+            userList.writeFormat(writer);
         }*/
 
         try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("usersInfo.bin"))) {
-            out.writeObject(model);
+            out.writeObject(userList);
         }
 
         System.out.println(user.toString());
         /*
         *  SERIALIZATION
         *
-        * Model m = new Model();
+        * userList m = new userList();
         try (ObjectInputStream in = new ObjectInputStream(new FileInputStream("usersInfo.bin"))) {
-            m = (Model) in.readObject();
+            m = (userList) in.readObject();
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
@@ -205,7 +212,7 @@ public class ForTest {
         user.setTaskDescriptionByIndex(3, "NEW DESCRIPTION");
         user.getTaskByIndex(3).writeFormat(new PrintWriter(System.out));*/
 
-        //model.writeFormat("usersInfo.txt");
+        //userList.writeFormat("usersInfo.txt");
 
 
         /*
@@ -291,5 +298,19 @@ public class ForTest {
                 userus.readXML((Element) node);
             }
         }
+
+
+        /*
+        XML ACTIONS WITH CONTROLLERS
+         */
+
+        UserController uC = new UserController();
+        uC.actionPushUser(user);
+        uC.actionPushUser(user1);
+        uC.actionPushUser(user2);
+
+        uC.actionWriteXML();
+
+        uC.actionReadXml();
     }
 }

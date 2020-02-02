@@ -5,50 +5,72 @@ import org.openjfx.enums.*;
 import org.openjfx.exceptions.*;
 import org.openjfx.interfaces.*;
 import org.openjfx.mvc.models.*;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import java.io.File;
+import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.ParseException;
 import java.util.Collection;
 import java.util.Date;
 
 public class UserController {
-    private UserList userListModel;
+    private UserList userList;
+    public static final String XML_PATH = "userInfo.xml";
 
     public UserController() {
-        userListModel = new UserList();
+        userList = new UserList();
     }
 
     public void actionDeleteUser(int id) throws UserException {
-        userListModel.remove(id);
+        userList.remove(id);
     }
 
     // ADD ACTIONS
 
-    public int actionPushUser(String name) {
-        return userListModel.push(new User(name));
+    public int actionPushNewUser(String name) {
+        return userList.push(new User(name));
+    }
+
+    public void actionPushUser(User user) {
+        userList.push(user);
     }
 
     public void actionAddProject(int userId, String projectName, ITask...tasks) throws UserException {
-        User user = userListModel.getUserByID(userId);
+        User user = userList.getUserByID(userId);
         user.addProject(projectName, tasks);
-        userListModel.setUserById(userId, user);
+        userList.setUserById(userId, user);
     }
 
     public void actionAddProjectTask(int userId, int projectIndex, ITask task)
             throws ProjectException, UserException {
-        User user = userListModel.getUserByID(userId);
+        User user = userList.getUserByID(userId);
         Project project = user.getProjectByIndex(projectIndex);
         project.add(task);
         user.setProjectByIndex(projectIndex, project);
-        userListModel.setUserById(userId, user);
+        userList.setUserById(userId, user);
     }
 
     public void actionAddTask(int userId, ITask task) throws UserException {
-        User user = userListModel.getUserByID(userId);
+        User user = userList.getUserByID(userId);
         user.addTask(task);
     }
 
     public void actionAddTasks(int userId, ITask ... tasks) throws UserException {
-        User user = userListModel.getUserByID(userId);
+        User user = userList.getUserByID(userId);
         user.addTasks(tasks);
     }
 
@@ -56,7 +78,7 @@ public class UserController {
 
     public void actionSet(int userId, int index, ITask task)
             throws ProjectException, TaskException, UserException {
-        User user = userListModel.getUserByID(userId);
+        User user = userList.getUserByID(userId);
         if (task instanceof Project) {
             user.setProjectByIndex(index, (Project) task);
         } else if (task instanceof Task) {
@@ -66,11 +88,11 @@ public class UserController {
 
     public void actionSetProjectTask(int userId, int projectIndex, int taskIndex, ITask task)
             throws ProjectException, TaskException, UserException {
-        User user = userListModel.getUserByID(userId);
+        User user = userList.getUserByID(userId);
         Project project = user.getProjectByIndex(projectIndex);
         project.setTaskByIndex(taskIndex, task);
         user.setProjectByIndex(projectIndex, project);
-        userListModel.setUserById(userId, user);
+        userList.setUserById(userId, user);
     }
 
     private <T> void fieldSetter(String fieldName, T field, ITask task) {
@@ -103,31 +125,31 @@ public class UserController {
 
     public <T> void actionSetProjectTaskField(int userId, int projectIndex, int taskIndex, String fieldName, T field)
             throws ProjectException, TaskException, UserException {
-        User user = userListModel.getUserByID(userId);
+        User user = userList.getUserByID(userId);
         Project project = user.getProjectByIndex(projectIndex);
         Task task = (Task) project.getTaskByIndex(taskIndex);
         fieldSetter(fieldName, field, task);
         project.setTaskByIndex(taskIndex, task);
         user.setProjectByIndex(projectIndex, project);
-        userListModel.setUserById(userId, user);
+        userList.setUserById(userId, user);
     }
 
     public <T> void actionSetProjectField(int userId, int projectIndex, String fieldName, T field)
             throws ProjectException, UserException {
-        User user = userListModel.getUserByID(userId);
+        User user = userList.getUserByID(userId);
         Project project = user.getProjectByIndex(projectIndex);
         fieldSetter(fieldName, field, project);
         user.setProjectByIndex(projectIndex, project);
-        userListModel.setUserById(userId, user);
+        userList.setUserById(userId, user);
     }
 
     public <T> void actionSetTaskField(int userId, int taskIndex, String fieldName, T field)
             throws TaskException, UserException {
-        User user = userListModel.getUserByID(userId);
+        User user = userList.getUserByID(userId);
         Task task = (Task) user.getTaskByIndex(taskIndex);
         fieldSetter(fieldName, field, task);
         user.setTaskByIndex(taskIndex, task);
-        userListModel.setUserById(userId, user);
+        userList.setUserById(userId, user);
     }
 
     private <T> Collection<ITask> collectionSwitcher(String fieldName, T field, Selectable obj) {
@@ -149,47 +171,85 @@ public class UserController {
     // GETTERS
 
     public User actionGetUser(int id) throws UserException {
-        return userListModel.getUserByID(id);
+        return userList.getUserByID(id);
     }
 
     public <T> Collection<ITask> actionGetProjectTasksByField(int userId, int projectIndex, String fieldName, T field)
             throws ProjectException, UserException {
-        User user = userListModel.getUserByID(userId);
+        User user = userList.getUserByID(userId);
         Project project = user.getProjectByIndex(projectIndex);
         return collectionSwitcher(fieldName, field, project);
     }
 
     public <T> Collection<ITask> actionGetUserTasksByField(int userId, String fieldName, T field)
             throws UserException {
-        User user = userListModel.getUserByID(userId);
+        User user = userList.getUserByID(userId);
         return collectionSwitcher(fieldName, field, user);
     }
 
     public Collection<ITask> actionGetTasksOutOfProjects(int userId) throws UserException {
-        User user = userListModel.getUserByID(userId);
+        User user = userList.getUserByID(userId);
         return user.getTasksOutOfProjects();
     }
 
     public Collection<ITask> actionGetTasksByTagSubstring(int userId, String sub) throws UserException {
-        User user = userListModel.getUserByID(userId);
+        User user = userList.getUserByID(userId);
         return user.findBySubstringInTag(sub);
     }
 
     // WRITE FORMAT ACTIONS
 
     public void actionWriteFormatTask(int userId, int taskIndex, PrintWriter out) throws UserException, TaskException {
-        User user = userListModel.getUserByID(userId);
+        User user = userList.getUserByID(userId);
         Task task = (Task) user.getTaskByIndex(taskIndex);
         task.writeFormat(out);
     }
 
     public void actionWriteFormatProject(int userId, int projectIndex, PrintWriter out) throws UserException, ProjectException {
-        User user = userListModel.getUserByID(userId);
+        User user = userList.getUserByID(userId);
         Project project = user.getProjectByIndex(projectIndex);
         project.writeFormat(out);
     }
 
     public void actionWriteFormatUser(int userId, PrintWriter out) throws UserException {
-        userListModel.getUserByID(userId).writeFormat(out);
+        userList.getUserByID(userId).writeFormat(out);
+    }
+
+    public void actionWriteXML() throws ParserConfigurationException, TransformerException {
+        DocumentBuilderFactory documentFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder documentBuilder = documentFactory.newDocumentBuilder();
+        Document document = documentBuilder.newDocument();
+
+        Element root = document.createElement("users");
+        document.appendChild(root);
+
+        TransformerFactory transformerFactory = TransformerFactory.newInstance();
+        Transformer transformer = transformerFactory.newTransformer();
+        DOMSource domSource = new DOMSource(document);
+        StreamResult streamResult = new StreamResult(new File(XML_PATH));
+
+        Collection<User> users = userList.getUsers();
+        for (User user : users) {
+            user.writeXML(document, root, transformer, domSource, streamResult);
+        }
+    }
+    
+    public void actionReadXml() throws IOException, SAXException, ParserConfigurationException, ParseException {
+        DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder documentBuilderOut = documentBuilderFactory.newDocumentBuilder();
+        Document documentOut = documentBuilderOut.parse(new File(XML_PATH));
+
+        NodeList nodeList = documentOut.getElementsByTagName("user");
+        userList.clear();
+        User tmpUser;
+
+        for (int i = 0; i < nodeList.getLength(); i++) {
+            Node node = nodeList.item(i);
+            if (node.getNodeType() == Node.ELEMENT_NODE) {
+                tmpUser = new User();
+                tmpUser.readXML((Element) node);
+                userList.push(tmpUser);
+            }
+        }
     }
 }

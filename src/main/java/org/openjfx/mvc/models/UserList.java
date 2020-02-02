@@ -12,6 +12,10 @@ public class UserList implements Serializable {
 
     private ArrayList<User> users = new ArrayList<>();
 
+    public ArrayList<User> getUsers() {
+        return users;
+    }
+
     public User getUserByID(int id) throws UserException {
         for (User user : this.users) {
             if (user.getId() == id)
@@ -57,5 +61,9 @@ public class UserList implements Serializable {
 
     public int size() {
         return this.users.size();
+    }
+
+    public void clear() {
+        users.clear();
     }
 }

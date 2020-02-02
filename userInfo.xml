@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<users>
+    <user id="0">
+        <name>KupuJIJI</name>
+        <tasksOutOfProjects>
+            <task id="0">
+                <name>Kill the Bill</name>
+                <description>using knife</description>
+                <startDate>Thu Mar 20 00:00:00 SAMT 3890</startDate>
+                <finishDate>Sat Mar 22 00:00:00 SAMT 3890</finishDate>
+                <taskType levelCode="2">ANY_TIME</taskType>
+                <taskState levelCode="4">PREPARATION</taskState>
+                <tag>death</tag>
+            </task>
+            <task id="1">
+                <name>7th lab</name>
+                <description>don't forget to export smthg</description>
+                <startDate>Mon Feb 03 01:00:07 SAMT 2020</startDate>
+                <finishDate>Tue Dec 23 00:00:00 SAMT 3919</finishDate>
+                <taskType levelCode="0">TODAY</taskType>
+                <taskState levelCode="0">IN_PROCESS</taskState>
+                <tag>netCracker</tag>
+            </task>
+        </tasksOutOfProjects>
+        <projects>
+            <project id="5">
+                <name>Home tasks</name>
+                <description/>
+                <startDate>null</startDate>
+                <finishDate>null</finishDate>
+                <taskType levelCode="1">GENERAL</taskType>
+                <taskState levelCode="0">IN_PROCESS</taskState>
+                <tag/>
+                <tasks>
+                    <task id="2">
+                        <name>walk with dog</name>
+                        <description/>
+                        <startDate>null</startDate>
+                        <finishDate>null</finishDate>
+                        <taskType levelCode="0">TODAY</taskType>
+                        <taskState levelCode="5">WAITING</taskState>
+                        <tag>home</tag>
+                    </task>
+                    <task id="3">
+                        <name>wash the dishes</name>
+                        <description/>
+                        <startDate>null</startDate>
+                        <finishDate>null</finishDate>
+                        <taskType levelCode="0">TODAY</taskType>
+                        <taskState levelCode="5">WAITING</taskState>
+                        <tag>home</tag>
+                    </task>
+                    <task id="4">
+                        <name>feed the cat</name>
+                        <description>don't forget water</description>
+                        <startDate>null</startDate>
+                        <finishDate>null</finishDate>
+                        <taskType levelCode="0">TODAY</taskType>
+                        <taskState levelCode="5">WAITING</taskState>
+                        <tag>home</tag>
+                    </task>
+                </tasks>
+            </project>
+            <project id="9">
+                <name>Car project</name>
+                <description>wait u just dissed me, I'm perplexed</description>
+                <startDate>null</startDate>
+                <finishDate>null</finishDate>
+                <taskType levelCode="3">LESS_IMPORTANT</taskType>
+                <taskState levelCode="-1">null</taskState>
+                <tag/>
+                <tasks>
+                    <task id="7">
+                        <name>by new tires</name>
+                        <description>not costly</description>
+                        <startDate>Mon Feb 03 01:00:07 SAMT 2020</startDate>
+                        <finishDate>null</finishDate>
+                        <taskType levelCode="0">TODAY</taskType>
+                        <taskState levelCode="5">WAITING</taskState>
+                        <tag>car</tag>
+                    </task>
+                    <task id="8">
+                        <name>wash the car</name>
+                        <description/>
+                        <startDate>Mon Feb 03 01:00:07 SAMT 2020</startDate>
+                        <finishDate>null</finishDate>
+                        <taskType levelCode="0">TODAY</taskType>
+                        <taskState levelCode="3">DELAYED</taskState>
+                        <tag>car</tag>
+                    </task>
+                </tasks>
+            </project>
+        </projects>
+    </user>
+    <user id="2">
+        <name>Alla</name>
+        <tasksOutOfProjects>
+            <task id="10">
+                <name>go to the gym</name>
+                <description>take the shaker</description>
+                <startDate>Mon Feb 03 01:00:07 SAMT 2020</startDate>
+                <finishDate>null</finishDate>
+                <taskType levelCode="0">TODAY</taskType>
+                <taskState levelCode="5">WAITING</taskState>
+                <tag>gym</tag>
+            </task>
+            <task id="15">
+                <name>Lera's task</name>
+                <description>desc</description>
+                <startDate>null</startDate>
+                <finishDate>null</finishDate>
+                <taskType levelCode="3">LESS_IMPORTANT</taskType>
+                <taskState levelCode="5">WAITING</taskState>
+                <tag>super tag</tag>
+            </task>
+        </tasksOutOfProjects>
+        <projects>
+            <project id="12">
+                <name>Health care</name>
+                <description/>
+                <startDate>null</startDate>
+                <finishDate>null</finishDate>
+                <taskType levelCode="-1">null</taskType>
+                <taskState levelCode="-1">null</taskState>
+                <tag/>
+                <tasks>
+                    <task id="11">
+                        <name>buy some drugs</name>
+                        <description>near the supermarket</description>
+                        <startDate>null</startDate>
+                        <finishDate>null</finishDate>
+                        <taskType levelCode="0">TODAY</taskType>
+                        <taskState levelCode="5">WAITING</taskState>
+                        <tag>health</tag>
+                    </task>
+                </tasks>
+            </project>
+        </projects>
+    </user>
+    <user id="1">
+        <name>Oleg</name>
+        <tasksOutOfProjects>
+            <task id="2">
+                <name>walk with dog</name>
+                <description/>
+                <startDate>null</startDate>
+                <finishDate>null</finishDate>
+                <taskType levelCode="0">TODAY</taskType>
+                <taskState levelCode="5">WAITING</taskState>
+                <tag>home</tag>
+            </task>
+        </tasksOutOfProjects>
+        <projects>
+            <project id="6">
+                <name>Some tasks</name>
+                <description/>
+                <startDate>null</startDate>
+                <finishDate>null</finishDate>
+                <taskType levelCode="-1">null</taskType>
+                <taskState levelCode="-1">null</taskState>
+                <tag/>
+                <tasks>
+                    <task id="3">
+                        <name>wash the dishes</name>
+                        <description/>
+                        <startDate>null</startDate>
+                        <finishDate>null</finishDate>
+                        <taskType levelCode="0">TODAY</taskType>
+                        <taskState levelCode="5">WAITING</taskState>
+                        <tag>home</tag>
+                    </task>
+                    <task id="4">
+                        <name>feed the cat</name>
+                        <description>don't forget water</description>
+                        <startDate>null</startDate>
+                        <finishDate>null</finishDate>
+                        <taskType levelCode="0">TODAY</taskType>
+                        <taskState levelCode="5">WAITING</taskState>
+                        <tag>home</tag>
+                    </task>
+                </tasks>
+            </project>
+        </projects>
+    </user>
+</users>

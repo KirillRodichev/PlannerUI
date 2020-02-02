@@ -52,7 +52,7 @@ public class MenuController {
     public MenuController() {
         userController = new UserController();
         taskController = new TaskController();
-        userId = userController.actionPushUser("Kirill");
+        userId = userController.actionPushNewUser("Kirill");
         ITask[] tasks = FakeData.get();
         try {
             userController.actionAddTasks(userId, tasks);

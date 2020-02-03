@@ -2,10 +2,7 @@ package org.openjfx.controllers;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.MenuButton;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.ScrollPane;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.util.Pair;
@@ -19,6 +16,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.net.URL;
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class LoginScreenController implements Initializable {
@@ -32,20 +31,19 @@ public class LoginScreenController implements Initializable {
     private Pane loginPane;
 
     private void addItemsToDropdown() {
+
+
+
         Pair<String, Integer>[] namesAndIds = this.userController.getUsersNamesAndIds();
-        MenuItem[] items = new MenuItem[TaskType.TASK_TYPES_STR.length];
-        for (int i = 0; i < namesAndIds.length; i++) {
-            items[i] = new MenuItem(namesAndIds[i].getKey());
-            int finalI = i;
-            items[i].setOnAction(actionEvent -> {
-                userController.selectUser(namesAndIds[finalI].getValue());
+        List<MenuItem> items = new ArrayList<>();
+        for (Pair<String, Integer> nameAndId: namesAndIds) {
+            MenuItem menu = new MenuItem(nameAndId.getKey());
+            menu.setOnAction(actionEvent -> {
+                userController.selectUser(nameAndId.getValue());
             });
+            items.add(menu);
         }
-        /*StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
-        for (StackTraceElement s : stackTrace) {
-            System.out.println(s);
-        }*/
-        dropdown.getItems().addAll(items); // почему-то падает
+        dropdown.getItems().addAll(items);
     }
 
     public LoginScreenController() {
@@ -55,24 +53,17 @@ public class LoginScreenController implements Initializable {
         } catch (IOException | ParserConfigurationException | SAXException | ParseException e) {
             e.printStackTrace();
         }
-        //addItemsToDropdown();
     }
 
     public void login(MouseEvent mouseEvent) throws IOException {
-        /*if (this.userController.getSelectedUserId() != -1) {
-            App.setRoot("menu");
+        if (this.userController.getSelectedUserId() != -1) {
+            try {
+                App.setRoot("menu", this.userController.getSelectedUserId());
+            } catch (ParseException | SAXException | ParserConfigurationException e) {
+                e.printStackTrace();
+            }
         } else {
             ModalWindows.alertWindow(ALERT_MSG);
-        }*/
-
-
-        /*
-        HARD CODE - userID
-         */
-        try {
-            App.setRoot("menu", 0);
-        } catch (ParseException | ParserConfigurationException | SAXException e) {
-            System.out.println("LOL EX: " + e.getLocalizedMessage());
         }
     }
 

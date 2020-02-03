@@ -1,12 +1,14 @@
 package org.openjfx.controllers;
 
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.geometry.Orientation;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.util.Pair;
 import org.openjfx.App;
 import org.openjfx.FakeData;
@@ -26,9 +28,11 @@ import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
+import java.net.URL;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.ResourceBundle;
 
 public class MenuController {
 
@@ -48,23 +52,23 @@ public class MenuController {
     private ScrollPane scrollView;
     @FXML
     private TextField searchField;
+    @FXML
+    private Text userName;
 
     public void setUserId(int id) throws SAXException, ParserConfigurationException, ParseException, IOException {
         this.userId = id;
         this.userController.actionReadXml();
         this.userController.selectUser(id);
+        try {
+            this.userName.setText(this.userController.actionGetUser(this.userId).getName());
+        } catch (UserException e) {
+            e.printStackTrace();
+        }
     }
 
     public MenuController() {
         userController = new UserController();
         taskController = new TaskController();
-        /*userId = userController.actionPushNewUser("Kirill");
-        ITask[] tasks = FakeData.get();
-        try {
-            userController.actionAddTasks(userId, tasks);
-        } catch (UserException e) {
-            System.out.println(e.getMessage());
-        }*/
     }
 
     private ArrayList<ITask> filterTasksByState(ArrayList<ITask> tasks, TaskState state) {
@@ -130,32 +134,32 @@ public class MenuController {
     }
 
     private Pair<String, Hyperlink> createLinkAndTitle(
-            ArrayList<ITask> tasks, int index, String modalTitle
+            ITask task, String modalTitle
     ) {
         Hyperlink link;
         String title;
         String field;
         switch (modalTitle) {
             case TaskFieldNames.NAME:
-                field = tasks.get(index).getName();
+                field = task.getName();
                 break;
             case TaskFieldNames.DESCRIPTION:
-                field = tasks.get(index).getDescription();
+                field = task.getDescription();
                 break;
             case TaskFieldNames.START_DATE:
-                field = tasks.get(index).getStartDate().toString();
+                field = task.getStartDate().toString();
                 break;
             case TaskFieldNames.FINISH_DATE:
-                field = tasks.get(index).getFinishDate().toString();
+                field = task.getFinishDate().toString();
                 break;
             case TaskFieldNames.TASK_STATE:
-                field = tasks.get(index).getState().toString();
+                field = task.getState().toString();
                 break;
             case TaskFieldNames.TASK_TYPE:
-                field = tasks.get(index).getType().toString();
+                field = task.getType().toString();
                 break;
             case TaskFieldNames.TAG:
-                field = tasks.get(index).getTag();
+                field = task.getTag();
                 break;
             default:
                 throw new IllegalStateException("Unexpected value: " + modalTitle);
@@ -177,7 +181,7 @@ public class MenuController {
             Label label = new Label(UIConsts.FIELDS[i]);
             label.getStyleClass().add(TASK_LABEL_STYLE);
             taskInfoContainer.add(label, 0, i + 1);
-            Pair<String, Hyperlink> titleAndLink = createLinkAndTitle(tasks, finalI, TaskFieldNames.FIELDS[i]);
+            Pair<String, Hyperlink> titleAndLink = createLinkAndTitle(tasks.get(finalI), TaskFieldNames.FIELDS[i]);
             String title = titleAndLink.getKey();
             Hyperlink link = titleAndLink.getValue();
             addOnMouseClickedListener(link, title, TaskFieldNames.FIELDS[i], tasks.get(finalI));

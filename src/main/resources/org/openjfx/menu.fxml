@@ -19,7 +19,7 @@
                 <Insets left="20.0" right="20.0" top="20.0" />
             </padding>
             <Pane prefHeight="82.0" prefWidth="208.0">
-                <Text layoutX="51.0" layoutY="23.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Username" wrappingWidth="158.1367416381836" />
+                <Text fx:id="userName" layoutX="51.0" layoutY="23.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Username" wrappingWidth="158.1367416381836" />
                 <Circle fill="#b4b4b4" layoutX="18.0" layoutY="18.0" radius="18.0" stroke="#fafafa" strokeType="INSIDE" />
                 <Button fx:id="logWithAnotherAccountBtn" layoutX="116.0" layoutY="6.0" mnemonicParsing="false" onMouseClicked="#logWithAnotherAccount" prefHeight="16.0" prefWidth="94.0" text="Log out" />
                 <Separator layoutX="-6.0" layoutY="42.0" prefHeight="16.0" prefWidth="220.0" />

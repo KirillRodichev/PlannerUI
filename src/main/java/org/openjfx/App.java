@@ -25,19 +25,9 @@ public class App extends Application {
         stage.show();
     }
 
-    /*private static Parent loadFXML(String fxml) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource(fxml + ".fxml"));
-        return fxmlLoader.load();
-    }*/
-
     private static Parent loadFXML(String fxml) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource(fxml + ".fxml"));
-        Parent parent = fxmlLoader.load();
-        /*LoginScreenController controller = fxmlLoader.getController();
-        controller.initialize(null, null);
-        fxmlLoader.setController(controller);
-        parent = fxmlLoader.load();*/
-        return parent;
+        return fxmlLoader.load();
     }
 
     public static void setRoot(String fxml) throws IOException {

@@ -27,7 +27,7 @@
             <Pane prefHeight="78.0" prefWidth="208.0">
                 <TextField fx:id="searchField" layoutX="-2.0" layoutY="1.0" prefHeight="26.0" prefWidth="214.0" promptText="Enter a tag " />
                 <Button fx:id="searchBtn" layoutX="-1.0" layoutY="37.0" mnemonicParsing="false" onMouseClicked="#search" prefHeight="26.0" prefWidth="66.0" text="Search" />
-            <Button fx:id="searchBtn1" layoutX="76.0" layoutY="37.0" mnemonicParsing="false" onMouseClicked="#search" prefHeight="26.0" prefWidth="136.0" text="Add Task/Project" />
+            <Button fx:id="addTaskBtn" layoutX="76.0" layoutY="37.0" mnemonicParsing="false" onMouseClicked="#addTask" prefHeight="26.0" prefWidth="136.0" text="Add Task/Project" />
             </Pane>
             <Pane prefHeight="40.0" prefWidth="208.0">
                 <Text layoutY="19.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: 800;" text="Tasks and Projects" wrappingWidth="126.93674087524414" />
@@ -67,6 +67,7 @@
         <ScrollPane fx:id="scrollView" layoutY="1.0" prefHeight="656.0" prefWidth="649.0">
          <padding>
             <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-         </padding></ScrollPane>
+         </padding>
+        </ScrollPane>
     </AnchorPane>
 </Pane>

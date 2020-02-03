@@ -1,5 +1,6 @@
 package org.openjfx.mvc.controllers;
 
+import javafx.util.Pair;
 import org.openjfx.constants.TaskFieldNames;
 import org.openjfx.enums.*;
 import org.openjfx.exceptions.*;
@@ -24,19 +25,32 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 
 public class UserController {
     private UserList userList;
     public static final String XML_PATH = "userInfo.xml";
+    private int selectedUserId;
 
     public UserController() {
-        userList = new UserList();
+        this.userList = new UserList();
+        this.selectedUserId = -1;
     }
 
-    public void actionDeleteUser(int id) throws UserException {
-        userList.remove(id);
+    public void actionDeleteUser(int userId) throws UserException {
+        userList.remove(userId);
+    }
+
+    public void actionDeleteTask(int userId, int taskId) throws UserException, TaskException {
+        User user = userList.getUserByID(userId);
+        user.removeTaskById(taskId);
+        userList.setUserById(userId, user);
+    }
+
+    public void selectUser(int Id) {
+        this.selectedUserId = Id;
     }
 
     // ADD ACTIONS
@@ -169,6 +183,25 @@ public class UserController {
     }
 
     // GETTERS
+
+    public int getSelectedUserId() {
+        return this.selectedUserId;
+    }
+
+    public ArrayList<Project> actionGetProjects() throws UserException {
+        return this.userList.getUserByID(this.selectedUserId).getProjects();
+    }
+
+    public Pair<String, Integer>[] getUsersNamesAndIds() {
+        Pair<String, Integer>[] namesAndIds = new Pair[this.userList.size()];
+        Collection<User> users = this.userList.getUsers();
+        int i = 0;
+        for (User user : users) {
+            namesAndIds[i] = new Pair<>(user.getName(), user.getId());
+            i++;
+        }
+        return namesAndIds;
+    }
 
     public User actionGetUser(int id) throws UserException {
         return userList.getUserByID(id);

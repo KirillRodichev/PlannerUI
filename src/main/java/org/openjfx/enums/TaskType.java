@@ -22,4 +22,11 @@ public enum TaskType {
             ANY_TIME,
             LESS_IMPORTANT
     };
+
+    public static final String[] TASK_TYPES_STR = new String[] {
+            "Today",
+            "General",
+            "Any time",
+            "Less important"
+    };
 }

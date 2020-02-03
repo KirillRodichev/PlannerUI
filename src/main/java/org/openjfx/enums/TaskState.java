@@ -26,4 +26,13 @@ public enum TaskState {
             PREPARATION,
             WAITING
     };
+
+    public static final String[] TASK_STATES_STR = new String[] {
+            "In process",
+            "Paused",
+            "Finished",
+            "Delayed",
+            "Preparation",
+            "Waiting"
+    };
 }

@@ -243,30 +243,3 @@ public class Task implements ITask, Cloneable, Serializable {
         tag = eElement.getElementsByTagName(TaskFieldNames.TAG).item(0).getTextContent();
     }
 }
-
-    /*public void readXML(Document document, int taskId) throws ParseException {
-        document.getDocumentElement().normalize();
-
-        NodeList nodeList = document.getElementsByTagName("task");
-        SimpleDateFormat formatter = new SimpleDateFormat("E MMM dd HH:mm:ss z yyyy", Locale.ENGLISH);
-
-        for (int i = 0; i < nodeList.getLength(); i++) {
-            Node node = nodeList.item(i);
-            if (node.getNodeType() == Node.ELEMENT_NODE
-                    && taskId == Integer.parseInt(((Element) node).getAttribute("id"))) {
-                Element eElement = (Element) node;
-                id = Integer.parseInt(eElement.getAttribute("id"));
-                name = eElement.getElementsByTagName(TaskFieldConsts.NAME).item(0).getTextContent();
-                description = eElement.getElementsByTagName(TaskFieldConsts.DESCRIPTION).item(0).getTextContent();
-                startDate = !eElement.getElementsByTagName(TaskFieldConsts.START_DATE).item(0).getTextContent().equals("null")
-                        ? formatter.parse(eElement.getElementsByTagName(TaskFieldConsts.START_DATE).item(0).getTextContent())
-                        : null;
-                finishDate = !eElement.getElementsByTagName(TaskFieldConsts.FINISH_DATE).item(0).getTextContent().equals("null")
-                        ? formatter.parse(eElement.getElementsByTagName(TaskFieldConsts.FINISH_DATE).item(0).getTextContent())
-                        : null;
-                taskType = TaskType.TASK_TYPES[Integer.parseInt(eElement.getElementsByTagName(TaskFieldConsts.TASK_TYPE).item(0).getAttributes().getNamedItem("levelCode").getNodeValue())];
-                taskState = TaskState.TASK_STATES[Integer.parseInt(eElement.getElementsByTagName(TaskFieldConsts.TASK_STATE).item(0).getAttributes().getNamedItem("levelCode").getNodeValue())];
-                tag = eElement.getElementsByTagName(TaskFieldConsts.TAG).item(0).getTextContent();
-            }
-        }
-    }*/

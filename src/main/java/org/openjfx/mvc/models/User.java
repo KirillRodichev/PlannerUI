@@ -227,17 +227,20 @@ public class User implements Serializable, Selectable, IUser {
         return this.id;
     }
 
+    public String getName() { return this.name; }
+
     public int getNumberOfTasks() {
         return this.tasks.size();
     }
 
     public Collection<ITask> getTasksOutOfProjects() {
-        Collection<ITask> uniqueTasks = tasks;
+        Collection<ITask> uniqueTasks = new ArrayList<>(tasks);
         for (ITask task : this.tasks) {
             for (Project project : this.projects) {
                 Collection<ITask> tasksCollection = project.getTasks();
                 if (tasksCollection.contains(task)) {
                     uniqueTasks.remove(task);
+                    break;
                 }
             }
         }
@@ -246,6 +249,10 @@ public class User implements Serializable, Selectable, IUser {
 
     public int getNumberOfProjects() {
         return this.projects.size();
+    }
+
+    public ArrayList<Project> getProjects() {
+        return this.projects;
     }
 
     // END GET
@@ -259,13 +266,23 @@ public class User implements Serializable, Selectable, IUser {
     }
 
     public void removeTaskById(int id) throws TaskException {
-        int removeIndex = 0;
         boolean removed = false;
-        for (; removeIndex < this.tasks.size(); removeIndex++)
-            if (this.tasks.get(removeIndex).getId() == id) {
-                this.tasks.remove(removeIndex);
+        for (int i = 0; i < this.tasks.size(); i++) {
+            if (this.tasks.get(i).getId() == id) {
+                this.tasks.remove(i);
                 removed = true;
+                break;
             }
+        }
+        if (!removed) {
+            for (int i = 0; i < this.projects.size(); i++) {
+                if (this.projects.get(i).getId() == id) {
+                    this.projects.remove(i);
+                    removed = true;
+                    break;
+                }
+            }
+        }
         if (!removed) throw new TaskException("Can't find the task with such id");
     }
 

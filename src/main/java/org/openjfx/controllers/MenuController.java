@@ -32,6 +32,7 @@ import java.net.URL;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.ResourceBundle;
 
 public class MenuController {
@@ -42,7 +43,8 @@ public class MenuController {
     private static final String ADD_BTN_STYLE = "addBtn";
     private static final String DELETE_BTN_STYLE = "deleteBtn";
     private static final String PROJ_CONTAINER_STYLE = "deleteBtn";
-    private static final String SEPARATOR = "separator";
+    private static final String SEPARATOR_STYLE = "separator";
+    private static final String LIST_LABEL_STYLE = "listLabel";
 
     private UserController userController;
     private TaskController taskController;
@@ -118,13 +120,14 @@ public class MenuController {
     }
 
     private void addOnMouseClickedListener(
-            Hyperlink hyperlink, String windowTitle, String windowField, ITask task
+            Hyperlink hyperlink, String windowTitle, String windowField, Object task
     ) {
         hyperlink.setOnMouseClicked((event1 -> {
             Object res = ModalWindows.editTaskFieldWindow(windowTitle, windowField);
             hyperlink.setText(res.toString());
             hyperlink.getStyleClass().remove(ADD_BTN_STYLE);
-            int taskIndex = taskController.getTaskIndex(task);
+            int taskIndex = task instanceof Project
+                    ? taskController.getTaskIndex((Project) task) : taskController.getTaskIndex((Task) task);
             try {
                 userController.actionSetTaskField(this.userId, taskIndex, windowField, res);
             } catch (UserException | TaskException e) {
@@ -134,32 +137,38 @@ public class MenuController {
     }
 
     private Pair<String, Hyperlink> createLinkAndTitle(
-            ITask task, String modalTitle
+            Object task, String modalTitle
     ) {
         Hyperlink link;
         String title;
         String field;
         switch (modalTitle) {
             case TaskFieldNames.NAME:
-                field = task.getName();
+                field = task instanceof Project ? ((Project) task).getName() : ((Task) task).getName();
                 break;
             case TaskFieldNames.DESCRIPTION:
-                field = task.getDescription();
+                field = task instanceof Project ? ((Project) task).getDescription() : ((Task) task).getDescription();
                 break;
             case TaskFieldNames.START_DATE:
-                field = task.getStartDate().toString();
+                Date startDate = task instanceof Project
+                        ? ((Project) task).getStartDate() : ((Task) task).getStartDate();
+                field = startDate != null ? startDate.toString() : null;
                 break;
             case TaskFieldNames.FINISH_DATE:
-                field = task.getFinishDate().toString();
+                Date finishDate = task instanceof Project
+                        ? ((Project) task).getFinishDate() : ((Task) task).getFinishDate();
+                field = finishDate != null ? finishDate.toString() : null;
                 break;
             case TaskFieldNames.TASK_STATE:
-                field = task.getState().toString();
+                field = task instanceof Project
+                        ? ((Project) task).getState().toString() : ((Task) task).getState().toString();
                 break;
             case TaskFieldNames.TASK_TYPE:
-                field = task.getType().toString();
+                field = task instanceof Project
+                        ? ((Project) task).getType().toString() : ((Task) task).getType().toString();
                 break;
             case TaskFieldNames.TAG:
-                field = task.getTag();
+                field = task instanceof Project ? ((Project) task).getTag() : ((Task) task).getTag();
                 break;
             default:
                 throw new IllegalStateException("Unexpected value: " + modalTitle);
@@ -176,15 +185,16 @@ public class MenuController {
         return new Pair<>(title, link);
     }
 
-    private void addInfoFields(GridPane taskInfoContainer, ArrayList<ITask> tasks, int finalI) {
+    private void addInfoFields(GridPane taskInfoContainer, Object task) {
         for (int i = 0; i < TaskFieldNames.FIELDS.length; i++) {
             Label label = new Label(UIConsts.FIELDS[i]);
             label.getStyleClass().add(TASK_LABEL_STYLE);
             taskInfoContainer.add(label, 0, i + 1);
-            Pair<String, Hyperlink> titleAndLink = createLinkAndTitle(tasks.get(finalI), TaskFieldNames.FIELDS[i]);
+            Pair<String, Hyperlink> titleAndLink;
+            titleAndLink = createLinkAndTitle(task, TaskFieldNames.FIELDS[i]);
             String title = titleAndLink.getKey();
             Hyperlink link = titleAndLink.getValue();
-            addOnMouseClickedListener(link, title, TaskFieldNames.FIELDS[i], tasks.get(finalI));
+            addOnMouseClickedListener(link, title, TaskFieldNames.FIELDS[i], task);
             taskInfoContainer.add(link, 1, i + 1);
         }
     }
@@ -196,7 +206,7 @@ public class MenuController {
 
     private void drawSeparator(GridPane taskInfoContainer) {
         Separator separator = new Separator(Orientation.HORIZONTAL);
-        separator.getStyleClass().add(SEPARATOR);
+        separator.getStyleClass().add(SEPARATOR_STYLE);
         taskInfoContainer.add(separator, 0, 0);
     }
 
@@ -219,25 +229,49 @@ public class MenuController {
         }
     }
 
-    private void drawTaskList(ArrayList<ITask> tasks, FlowPane container) {
-        VBox verticalContainer = new VBox();
-        GridPane taskInfoContainer = new GridPane();
+    private void drawLabels(VBox verticalContainer, Object task) {
+        Label label = new Label();
+        label.getStyleClass().add(LIST_LABEL_STYLE);
+        if (task instanceof Project) {
+            label.setText("Projects");
+        } else {
+            label.setText("Tasks");
+        }
+        verticalContainer.getChildren().add(label);
+    }
+
+    private void drawTaskList(ArrayList<?> tasks, VBox verticalContainer, GridPane taskInfoContainer) {
         Hyperlink[] editTaskField = new Hyperlink[tasks.size()];
+        drawLabels(verticalContainer, tasks.get(0));
         for (int i = 0; i < editTaskField.length; i++) {
-            editTaskField[i] = new Hyperlink((i + 1) + ". " + tasks.get(i).getName());
+            if (tasks.get(i) instanceof Task) {
+                editTaskField[i] = new Hyperlink((i + 1) + ". " + ((Task) tasks.get(i)).getName());
+            } else {
+                editTaskField[i] = new Hyperlink((i + 1) + ". " + ((Project) tasks.get(i)).getName());
+            }
             editTaskField[i].getStyleClass().add(TASK_LINK_STYLE);
             int finalI = i;
             editTaskField[i].setOnMouseClicked((event) -> {
                         clearInfoContainer(verticalContainer, taskInfoContainer);
                         drawSeparator(taskInfoContainer);
-                        addInfoFields(taskInfoContainer, tasks, finalI);
-                        drawDeleteButton(taskInfoContainer, tasks.get(finalI).getId());
+                        addInfoFields(taskInfoContainer, tasks.get(finalI));
+                        if (tasks.get(finalI) instanceof Task) {
+                            drawDeleteButton(taskInfoContainer, ((Task) tasks.get(finalI)).getId());
+                        } else {
+                            drawDeleteButton(taskInfoContainer, ((Project) tasks.get(finalI)).getId());
+                        }
                         verticalContainer.getChildren().add(taskInfoContainer);
                     }
             );
             verticalContainer.getChildren().add(editTaskField[i]);
+            if (tasks.get(finalI) instanceof Project) {
+                try {
+                    drawTaskList(this.userController.actionGetProjects().get(finalI).getTasks(), verticalContainer, taskInfoContainer);
+                } catch (UserException e) {
+                    e.printStackTrace();
+                }
+            }
         }
-        container.getChildren().add(verticalContainer);
     }
 
     private void addEmptyTasksListMessage(FlowPane container) {
@@ -250,6 +284,9 @@ public class MenuController {
     private <T> void drawContainer(String header, T filter) throws UserException {
         FlowPane container = new FlowPane(Orientation.VERTICAL, 10, 10);
         addHeader(header, container);
+        VBox verticalContainer = new VBox();
+        container.getChildren().add(verticalContainer);
+        GridPane taskInfoContainer = new GridPane();
 
         ArrayList<ITask> tasks;
         ArrayList<Project> projects;
@@ -270,10 +307,10 @@ public class MenuController {
             projects = userController.actionGetProjects();
         }
         if (!tasks.isEmpty()) {
-            drawTaskList(tasks, container);
+            drawTaskList(tasks, verticalContainer, taskInfoContainer);
         }
         if (!projects.isEmpty()) {
-
+            drawTaskList(projects, verticalContainer, taskInfoContainer);
         }
         if (tasks.isEmpty() && projects.isEmpty()) {
             addEmptyTasksListMessage(container);
@@ -284,9 +321,12 @@ public class MenuController {
 
     private void drawSearchResContainer(Collection<ITask> tasks) {
         FlowPane container = new FlowPane(Orientation.VERTICAL, 10, 10);
+        VBox verticalContainer = new VBox();
+        container.getChildren().add(verticalContainer);
+        GridPane taskInfoContainer = new GridPane();
         addHeader("Search result", container);
         if (!tasks.isEmpty()) {
-            drawTaskList((ArrayList<ITask>) tasks, container);
+            drawTaskList((ArrayList<ITask>) tasks, verticalContainer, taskInfoContainer);
         } else {
             addEmptyTasksListMessage(container);
         }

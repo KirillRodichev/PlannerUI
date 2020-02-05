@@ -48,7 +48,6 @@ public class MenuController {
 
     private UserController userController;
     private TaskController taskController;
-    private int userId;
 
     @FXML
     private ScrollPane scrollView;
@@ -58,11 +57,10 @@ public class MenuController {
     private Text userName;
 
     public void setUserId(int id) throws SAXException, ParserConfigurationException, ParseException, IOException {
-        this.userId = id;
         this.userController.actionReadXml();
         this.userController.selectUser(id);
         try {
-            this.userName.setText(this.userController.actionGetUser(this.userId).getName());
+            this.userName.setText(this.userController.actionGetUser(this.userController.getSelectedUserId()).getName());
         } catch (UserException e) {
             e.printStackTrace();
         }
@@ -129,7 +127,7 @@ public class MenuController {
             int taskIndex = task instanceof Project
                     ? taskController.getTaskIndex((Project) task) : taskController.getTaskIndex((Task) task);
             try {
-                userController.actionSetTaskField(this.userId, taskIndex, windowField, res);
+                userController.actionSetTaskField(this.userController.getSelectedUserId(), taskIndex, windowField, res);
             } catch (UserException | TaskException e) {
                 e.printStackTrace();
             }
@@ -221,7 +219,7 @@ public class MenuController {
             taskInfoContainer.add(deleteTaskBtn, 0, 8);
             deleteTaskBtn.setOnMouseClicked((event1 -> {
                 try {
-                    this.userController.actionDeleteTask(this.userId, taskId);
+                    this.userController.actionDeleteTask(this.userController.getSelectedUserId(), taskId);
                 } catch (UserException | TaskException e) {
                     System.out.println("Delete exception: " + e.getLocalizedMessage());
                 }
@@ -292,18 +290,18 @@ public class MenuController {
         ArrayList<Project> projects;
         if (filter instanceof TaskState) {
             tasks = filterTasksByState(
-                    (ArrayList<ITask>) userController.actionGetTasksOutOfProjects(this.userId),
+                    (ArrayList<ITask>) userController.actionGetTasksOutOfProjects(this.userController.getSelectedUserId()),
                     (TaskState) filter
             );
             projects = filterProjectsByState(userController.actionGetProjects(), (TaskState) filter);
         } else if (filter instanceof TaskType) {
             tasks = filterTasksByType(
-                    (ArrayList<ITask>) userController.actionGetTasksOutOfProjects(this.userId),
+                    (ArrayList<ITask>) userController.actionGetTasksOutOfProjects(this.userController.getSelectedUserId()),
                     (TaskType) filter
             );
             projects = filterProjectsByType(userController.actionGetProjects(), (TaskType) filter);
         } else {
-            tasks = (ArrayList<ITask>) userController.actionGetTasksOutOfProjects(this.userId);
+            tasks = (ArrayList<ITask>) userController.actionGetTasksOutOfProjects(this.userController.getSelectedUserId());
             projects = userController.actionGetProjects();
         }
         if (!tasks.isEmpty()) {
@@ -402,7 +400,9 @@ public class MenuController {
         String text = searchField.getText();
         if ((text != null && !text.isEmpty())) {
             System.out.println("ENTERED TEXT: " + searchField.getText());
-            Collection<ITask> res = new ArrayList<>(userController.actionGetTasksByTagSubstring(userId, text));
+            Collection<ITask> res = new ArrayList<>(
+                    userController.actionGetTasksByTagSubstring(this.userController.getSelectedUserId(), text)
+            );
             drawSearchResContainer(res);
         } else {
             System.out.println("NOTHING ENTERED");
@@ -410,9 +410,11 @@ public class MenuController {
     }
 
     public void logWithAnotherAccount(MouseEvent mouseEvent) throws IOException {
+        this.userController.selectUser(-1);
         App.setRoot("login");
     }
 
-    public void addTask(MouseEvent mouseEvent) {
+    public void addTask(MouseEvent mouseEvent) throws UserException {
+        ModalWindows.createTaskWindow("title", this.userController, new Task());
     }
 }

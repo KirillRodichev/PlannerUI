@@ -26,7 +26,7 @@ import java.util.*;
 
 public class ForTest {
     public static void main(String[] args)
-            throws IOException, ProjectException, UserException, TransformerException, ParserConfigurationException, SAXException, ParseException {
+            throws IOException, ProjectException, UserException, TransformerException, ParserConfigurationException, SAXException, ParseException, CloneNotSupportedException {
         UserList userList = new UserList();
 
         User user = new User("KupuJIJI");

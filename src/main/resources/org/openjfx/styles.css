@@ -69,3 +69,26 @@
     -fx-font-weight: bold;
     -fx-padding: 5, 0, 5, 0;
 }
+
+.modal__container {
+    -fx-padding: 10, 50, 10, 50;
+}
+
+.modal__header {
+    -fx-font-size: 16;
+    -fx-font-family: 'Roboto Medium';
+}
+
+.modal__manipulateBtns {
+    -fx-min-width: 70;
+    -fx-padding: 5, 15, 5, 15;
+}
+
+.modal__btnContainer {
+    -fx-padding: 15, 0, 15, 0;
+}
+
+.modal__btnSeparator {
+    -fx-min-width: 30;
+    -fx-padding: 40;
+}

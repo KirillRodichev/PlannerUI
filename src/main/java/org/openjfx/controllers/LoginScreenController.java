@@ -27,13 +27,8 @@ public class LoginScreenController implements Initializable {
     private UserController userController;
     @FXML
     private MenuButton dropdown;
-    @FXML
-    private Pane loginPane;
 
     private void addItemsToDropdown() {
-
-
-
         Pair<String, Integer>[] namesAndIds = this.userController.getUsersNamesAndIds();
         List<MenuItem> items = new ArrayList<>();
         for (Pair<String, Integer> nameAndId: namesAndIds) {

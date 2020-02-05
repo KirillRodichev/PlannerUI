@@ -13,17 +13,17 @@
         <Pane layoutX="246.0" layoutY="50.0" prefHeight="400.0" prefWidth="257.0"
               style="-fx-background-color: #fafafa;">
             <children>
-                <TextField layoutX="33.0" layoutY="112.0" prefHeight="26.0" prefWidth="191.0"
+                <TextField fx:id="input" layoutX="33.0" layoutY="112.0" prefHeight="26.0" prefWidth="191.0"
                            promptText="Input user name" style="-fx-background-color: #fff;"/>
                 <Button fx:id="signupBtn" layoutX="51.0" layoutY="220.0" mnemonicParsing="false"
                         onMouseClicked="#signup"
-                        prefHeight="32.0" prefWidth="155.0" style="-fx-border-radius: 10;" text="Signup"
+                        prefHeight="32.0" prefWidth="155.0" style="-fx-border-radius: 10;" text="Create"
                         textAlignment="CENTER" textFill="#323232"/>
                 <Button fx:id="switchToLoginBtn" onMouseClicked="#switchToLogin" layoutX="51.0" layoutY="267.0"
                         mnemonicParsing="false" prefHeight="32.0" prefWidth="155.0"
-                        text="Switch to Login" textFill="#323232"/>
+                        text="Switch to Select" textFill="#323232"/>
                 <Text layoutX="60.0" layoutY="44.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: 800;"
-                      text="Signup" textAlignment="CENTER" wrappingWidth="137.1830234527588">
+                      text="Create user" textAlignment="CENTER" wrappingWidth="137.1830234527588">
                     <font>
                         <Font size="14.0"/>
                     </font>

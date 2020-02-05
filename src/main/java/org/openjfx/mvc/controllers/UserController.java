@@ -53,6 +53,10 @@ public class UserController {
         this.selectedUserId = Id;
     }
 
+    public User popUser() {
+        return this.userList.getUsers().get(this.userList.size() - 1);
+    }
+
     // ADD ACTIONS
 
     public int actionPushNewUser(String name) {
@@ -76,6 +80,11 @@ public class UserController {
         project.add(task);
         user.setProjectByIndex(projectIndex, project);
         userList.setUserById(userId, user);
+    }
+
+    public void actionAddProject(Project project) throws UserException {
+        User user = userList.getUserByID(this.selectedUserId);
+        user.addProject(project);
     }
 
     public void actionAddTask(int userId, ITask task) throws UserException {

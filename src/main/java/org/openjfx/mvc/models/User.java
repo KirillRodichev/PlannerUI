@@ -261,6 +261,10 @@ public class User implements Serializable, Selectable, IUser {
         this.tasks.add(task);
     }
 
+    public void addProject(Project project) {
+        this.projects.add(project);
+    }
+
     public void addTasks(ITask ... tasks) {
         this.tasks.addAll(Arrays.asList(tasks));
     }

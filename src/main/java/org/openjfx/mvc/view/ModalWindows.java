@@ -11,6 +11,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.openjfx.App;
+import org.openjfx.constants.DatePattern;
 import org.openjfx.constants.TaskFieldNames;
 import org.openjfx.constants.UIConsts;
 import org.openjfx.enums.TaskState;
@@ -19,11 +20,16 @@ import org.openjfx.exceptions.UserException;
 import org.openjfx.mvc.controllers.UserController;
 import org.openjfx.mvc.models.Project;
 import org.openjfx.mvc.models.Task;
+import org.openjfx.mvc.models.User;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.regex.Matcher;
 
 public class ModalWindows {
-    private static String selectedName, selectedDescription, selectedStartDate, selectedFinishDate, selectedTag;
+    private static String selectedName, selectedDescription, selectedTag;
+    private static Date selectedStartDate, selectedFinishDate;
     private static TaskType selectedType;
     private static TaskState selectedState;
 
@@ -34,6 +40,9 @@ public class ModalWindows {
 
     private static final String TASK_TYPE_DROPDOWN = "Select type";
     private static final String TASK_STATE_DROPDOWN = "Select state";
+
+    private static final String INVALID_STR_MSG = "field length must be greater than 2!";
+    private static final String INVALID_DATE_MSG = "field must match the given format!";
 
     private static Button addManipulateBtns(HBox btnContainer, Stage window) {
         Button confirmBtn = new Button("Confirm");
@@ -74,7 +83,7 @@ public class ModalWindows {
         switch (field) {
             case TaskFieldNames.START_DATE:
             case TaskFieldNames.FINISH_DATE:
-                container.getChildren().add(new Label("Format: YY:MM:DD"));
+                container.getChildren().add(new Label(DatePattern.FORMATS[1]));
             case TaskFieldNames.NAME:
             case TaskFieldNames.DESCRIPTION:
             case TaskFieldNames.TAG:
@@ -151,7 +160,7 @@ public class ModalWindows {
             case TaskFieldNames.START_DATE:
             case TaskFieldNames.FINISH_DATE:
                 TextField dateField = new TextField();
-                dateField.setPromptText("Format: YY:MM:DD");
+                dateField.setPromptText(DatePattern.FORMATS[1]);
                 dateField.getStyleClass().add("modal__textField");
                 taskInfoContainer.add(dateField, 1, gridRow);
                 break;
@@ -180,60 +189,66 @@ public class ModalWindows {
         }
     }
 
-    private static Object addConfirmAction(Button confirm, GridPane taskInfoContainer, Object o) {
+    private static boolean stringValidation(String str, boolean mustBeFilled) {
+        if (mustBeFilled) {
+            return str.length() > 2;
+        } else {
+            return str.equals("") | str.length() > 2;
+        }
+    }
+
+    private static void addConfirmAction(Button confirm, GridPane taskInfoContainer) {
         confirm.setOnAction(actionEvent -> {
             int i = 0;
             for (Node node : taskInfoContainer.getChildren()) {
                 if (taskInfoContainer.getColumnIndex(node) == 1) {
                     if (node instanceof TextField) {
+                        String text = ((TextField) node).getText();
                         switch (i) {
                             case 0:
-                                selectedName = ((TextField) node).getText();
+                                if (stringValidation(text, true)) {
+                                    selectedName = text;
+                                } else {
+                                    alertWindow(TaskFieldNames.NAME + " " + INVALID_STR_MSG);
+                                }
                                 break;
                             case 1:
-                                selectedDescription = ((TextField) node).getText();
+                                if (stringValidation(text, false)) {
+                                    selectedDescription = text;
+                                } else {
+                                    alertWindow(TaskFieldNames.DESCRIPTION + " " + INVALID_STR_MSG);
+                                }
                                 break;
                             case 2:
-                                selectedStartDate = ((TextField) node).getText();
+                                try {
+                                    selectedStartDate = new SimpleDateFormat("dd-MM-yyyy").parse(text);
+                                } catch (ParseException e) {
+                                    alertWindow(TaskFieldNames.START_DATE + " " + INVALID_DATE_MSG);
+                                }
                                 break;
                             case 3:
-                                selectedFinishDate = ((TextField) node).getText();
+                                try {
+                                    selectedFinishDate = new SimpleDateFormat("dd-MM-yyyy").parse(text);
+                                } catch (ParseException e) {
+                                    alertWindow(TaskFieldNames.FINISH_DATE + " " + INVALID_DATE_MSG);
+                                }
                                 break;
                             case 6:
-                                selectedTag = ((TextField) node).getText();
+                                if (stringValidation(text, false)) {
+                                    selectedTag = text;
+                                } else {
+                                    alertWindow(TaskFieldNames.TAG + " " + INVALID_STR_MSG);
+                                }
                                 break;
                         }
                     }
+                    i++;
                 }
-                i++;
             }
-
         });
-        if (o instanceof Task) {
-            return new Task(
-                    selectedName,
-                    selectedDescription,
-                    new Date(selectedStartDate),
-                    new Date(selectedFinishDate),
-                    selectedType,
-                    selectedState,
-                    selectedTag
-            );
-        } else {
-            return new Project(
-                    selectedName,
-                    selectedDescription,
-                    new Date(selectedStartDate),
-                    new Date(selectedFinishDate),
-                    selectedType,
-                    selectedState,
-                    selectedTag,
-                    null
-            );
-        }
     }
 
-    public static void createTaskWindow(String title, UserController userController, Object task) throws UserException {
+    public static UserController createTaskWindow(String title, UserController userController, Object task) throws UserException {
         Stage window = new Stage();
         window.initModality(Modality.APPLICATION_MODAL);
         VBox container = new VBox();
@@ -250,17 +265,37 @@ public class ModalWindows {
         addInfoFields(taskInfoContainer);
         container.getChildren().add(taskInfoContainer);
 
-        Object o = addConfirmAction(confirmBtn, taskInfoContainer, task);
-        if (o instanceof Project) {
-            userController.actionAddProject((Project) o);
-        } else {
-            userController.actionAddTask(userController.getSelectedUserId(), (Task) o);
-        }
+        addConfirmAction(confirmBtn, taskInfoContainer);
 
         container.getChildren().add(btnContainer);
         window.setScene(scene);
         window.setTitle(title);
         window.showAndWait();
+
+        if (task instanceof Project) {
+            userController.actionAddProject(new Project(
+                    selectedName,
+                    selectedDescription,
+                    selectedStartDate,
+                    selectedFinishDate,
+                    selectedType,
+                    selectedState,
+                    selectedTag,
+                    null
+            ));
+        } else {
+            userController.actionAddTask(userController.getSelectedUserId(), new Task(
+                    selectedName,
+                    selectedDescription,
+                    selectedStartDate,
+                    selectedFinishDate,
+                    selectedType,
+                    selectedState,
+                    selectedTag
+            ));
+        }
+
+        return userController;
     }
 
     public static void alertWindow(String message) {

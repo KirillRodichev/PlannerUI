@@ -38,6 +38,10 @@ public class App extends Application {
         scene.setRoot(loadFXML(fxml, userId));
     }
 
+    public static void setRoot(String fxml, String name) throws IOException, ParseException, SAXException, ParserConfigurationException {
+        scene.setRoot(loadFXML(fxml, name));
+    }
+
     private static Parent loadFXML(String fxml, int userId)
             throws IOException, ParseException, SAXException, ParserConfigurationException {
         FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource(fxml + ".fxml"));
@@ -46,6 +50,17 @@ public class App extends Application {
 
         MenuController menuController = fxmlLoader.getController();
         menuController.setUserId(userId);
+
+        return parent;
+    }
+
+    private static Parent loadFXML(String fxml, String name) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource(fxml + ".fxml"));
+
+        Parent parent = fxmlLoader.load();
+
+        MenuController menuController = fxmlLoader.getController();
+        menuController.createUser(name);
 
         return parent;
     }

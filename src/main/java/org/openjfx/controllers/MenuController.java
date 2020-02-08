@@ -30,10 +30,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.net.URL;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class MenuController {
 
@@ -59,6 +56,16 @@ public class MenuController {
     public void setUserId(int id) throws SAXException, ParserConfigurationException, ParseException, IOException {
         this.userController.actionReadXml();
         this.userController.selectUser(id);
+        try {
+            this.userName.setText(this.userController.actionGetUser(this.userController.getSelectedUserId()).getName());
+        } catch (UserException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void createUser(String name) {
+        this.userController.actionPushNewUser(name);
+        this.userController.selectUser(this.userController.popUser().getId());
         try {
             this.userName.setText(this.userController.actionGetUser(this.userController.getSelectedUserId()).getName());
         } catch (UserException e) {
@@ -400,8 +407,8 @@ public class MenuController {
         String text = searchField.getText();
         if ((text != null && !text.isEmpty())) {
             System.out.println("ENTERED TEXT: " + searchField.getText());
-            Collection<ITask> res = new ArrayList<>(
-                    userController.actionGetTasksByTagSubstring(this.userController.getSelectedUserId(), text)
+            List<ITask> res = new ArrayList<>(
+                    this.userController.actionGetTasksByTagSubstring(this.userController.getSelectedUserId(), text)
             );
             drawSearchResContainer(res);
         } else {
@@ -415,6 +422,6 @@ public class MenuController {
     }
 
     public void addTask(MouseEvent mouseEvent) throws UserException {
-        ModalWindows.createTaskWindow("title", this.userController, new Task());
+        this.userController = ModalWindows.createTaskWindow("title", this.userController, new Task());
     }
 }

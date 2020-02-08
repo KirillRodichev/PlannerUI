@@ -14,7 +14,7 @@
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
-      <module name="PlannerUI" options="--add-exports javafx.graphics/com.sun.javafx.application=org.openjfx" />
+      <module name="PlannerUI" options="" />
     </option>
   </component>
 </project>

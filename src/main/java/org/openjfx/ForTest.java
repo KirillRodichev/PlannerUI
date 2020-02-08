@@ -21,7 +21,9 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.*;
+import java.text.DateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class ForTest {
@@ -300,9 +302,7 @@ public class ForTest {
         }
 
 
-        /*
-        XML ACTIONS WITH CONTROLLERS
-         */
+        /*XML ACTIONS WITH CONTROLLERS*/
 
         UserController uC = new UserController();
         uC.actionPushUser(user);

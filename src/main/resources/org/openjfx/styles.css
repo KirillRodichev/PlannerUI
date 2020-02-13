@@ -50,6 +50,11 @@
     -fx-pref-width: 100;
 }
 
+.taskLabelModal {
+    -fx-pref-height: 35;
+    -fx-pref-width: 100;
+}
+
 .deleteBtn {
     -fx-min-width: 70;
 }

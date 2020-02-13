@@ -1,5 +1,6 @@
 package org.openjfx;
 
+import org.openjfx.constants.DatePattern;
 import org.openjfx.enums.*;
 import org.openjfx.exceptions.*;
 import org.openjfx.interfaces.*;
@@ -25,10 +26,20 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.regex.Pattern;
 
 public class ForTest {
+
     public static void main(String[] args)
-            throws IOException, ProjectException, UserException, TransformerException, ParserConfigurationException, SAXException, ParseException, CloneNotSupportedException {
+            throws IOException,
+            ProjectException,
+            UserException,
+            TransformerException,
+            ParserConfigurationException,
+            SAXException,
+            ParseException,
+            CloneNotSupportedException {
+
         UserList userList = new UserList();
 
         User user = new User("KupuJIJI");
@@ -220,7 +231,7 @@ public class ForTest {
         /*
         WRITE TO XML
          */
-        DocumentBuilderFactory documentFactory = DocumentBuilderFactory.newInstance();
+        /*DocumentBuilderFactory documentFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder documentBuilder = null;
         try {
             documentBuilder = documentFactory.newDocumentBuilder();
@@ -240,9 +251,9 @@ public class ForTest {
                 TaskType.LESS_IMPORTANT,
                 TaskState.WAITING,
                 "super tag"
-        );
+        );*/
 
-        TransformerFactory transformerFactory = TransformerFactory.newInstance();
+        /*TransformerFactory transformerFactory = TransformerFactory.newInstance();
         Transformer transformer = transformerFactory.newTransformer();
         DOMSource domSource = new DOMSource(document);
         StreamResult streamResult = new StreamResult(new File("userInfo.xml"));
@@ -251,7 +262,7 @@ public class ForTest {
         proj.setDescription("descr");
         proj.setState(TaskState.FINISHED);
         proj.setType(TaskType.ANY_TIME);
-        proj.setStartDate(new Date());
+        proj.setStartDate(new Date());*/
 
         /*
         TASK TO XML
@@ -275,16 +286,16 @@ public class ForTest {
         /*
         USER TO XML
          */
-        try {
+        /*try {
             user.writeXML(document, root, transformer, domSource, streamResult);
         } catch (Exception e) {
             System.out.println(e.getMessage() + "exexexe");
-        }
+        }*/
 
         /*
         READ FROM XML
          */
-        ITask projecticus = new Project();
+        /*ITask projecticus = new Project();
         User userus = new User();
 
         File file = new File("userInfo.xml");
@@ -299,18 +310,19 @@ public class ForTest {
             if (node.getNodeType() == Node.ELEMENT_NODE) {
                 userus.readXML((Element) node);
             }
-        }
+        }*/
 
 
         /*XML ACTIONS WITH CONTROLLERS*/
 
-        UserController uC = new UserController();
+        /*UserController uC = new UserController();
         uC.actionPushUser(user);
         uC.actionPushUser(user1);
         uC.actionPushUser(user2);
 
         uC.actionWriteXML();
 
-        uC.actionReadXml();
+        uC.actionReadXml();*/
+
     }
 }

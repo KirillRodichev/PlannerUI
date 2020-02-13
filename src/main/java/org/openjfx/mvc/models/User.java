@@ -26,7 +26,7 @@ public class User implements Serializable, Selectable, IUser {
     private String name;
     private static int numberOfUsers = 0;
     private ArrayList<ITask> tasks;
-    private ArrayList<Project> projects;
+    private ArrayList<ITask> projects;
 
     public User() {
         this.id = User.numberOfUsers;
@@ -49,7 +49,7 @@ public class User implements Serializable, Selectable, IUser {
 
     public void setProjectByIndex(int projectIndex, Map<Integer, ITask> indexTaskMap)
             throws TaskException {
-        Project project = this.projects.get(projectIndex);
+        Project project = (Project) this.projects.get(projectIndex);
         for (int i = 0; i < project.size(); i++) {
             if (indexTaskMap.containsKey(i)) {
                 project.setTaskByIndex(i, indexTaskMap.get(i));
@@ -68,7 +68,7 @@ public class User implements Serializable, Selectable, IUser {
 
     public Project getProjectByIndex(int index) throws ProjectException {
         try {
-            return this.projects.get(index);
+            return (Project) this.projects.get(index);
         } catch (IndexOutOfBoundsException e) {
             throw new ProjectException(e.getMessage());
         }
@@ -81,6 +81,14 @@ public class User implements Serializable, Selectable, IUser {
             this.tasks.set(index, task);
         } catch (IndexOutOfBoundsException e) {
             throw new TaskException(e.getMessage());
+        }
+    }
+
+    public void setTaskById(int Id, Task task) {
+        for (int i = 0; i < this.tasks.size(); i++) {
+            if (this.tasks.get(i).getId() == Id) {
+                this.tasks.set(i, task);
+            }
         }
     }
 
@@ -165,11 +173,29 @@ public class User implements Serializable, Selectable, IUser {
 
     // GET
 
+    public Collection<ITask> getTasks() {
+        return this.tasks;
+    }
+
+    public ITask getTaskById(int Id) {
+        for (ITask task : this.tasks) {
+            if (task.getId() == Id) {
+                return task;
+            }
+        }
+        return null;
+    }
+
     public Collection<ITask> findBySubstringInTag(String sub) {
         Collection<ITask> res = new ArrayList<>();
-        for (ITask task : tasks) {
+        for (ITask task : this.tasks) {
             if (task.getTag().contains(sub)) {
                 res.add(task);
+            }
+        }
+        for (ITask project : this.projects) {
+            if (project.getTag().contains(sub)) {
+                res.add(project);
             }
         }
         return res;
@@ -236,8 +262,8 @@ public class User implements Serializable, Selectable, IUser {
     public Collection<ITask> getTasksOutOfProjects() {
         Collection<ITask> uniqueTasks = new ArrayList<>(tasks);
         for (ITask task : this.tasks) {
-            for (Project project : this.projects) {
-                Collection<ITask> tasksCollection = project.getTasks();
+            for (ITask project : this.projects) {
+                Collection<ITask> tasksCollection = ((Project) project).getTasks();
                 if (tasksCollection.contains(task)) {
                     uniqueTasks.remove(task);
                     break;
@@ -251,7 +277,7 @@ public class User implements Serializable, Selectable, IUser {
         return this.projects.size();
     }
 
-    public ArrayList<Project> getProjects() {
+    public ArrayList<ITask> getProjects() {
         return this.projects;
     }
 
@@ -293,8 +319,8 @@ public class User implements Serializable, Selectable, IUser {
     public void writeFormat (PrintWriter out) {
         out.printf("\nuserId = %d\nuserName = %s", this.id, this.name);
         ArrayList<ITask> tasksNotInProjects = new ArrayList<>(tasks);
-        for (Project iProject : this.projects) {
-            for (ITask iTask : iProject.getTasks()) {
+        for (ITask iProject : this.projects) {
+            for (ITask iTask : ((Project) iProject).getTasks()) {
                 tasksNotInProjects.remove(iTask);
             }
         }
@@ -306,7 +332,7 @@ public class User implements Serializable, Selectable, IUser {
         }
         i = 0;
         out.printf("\n\nProjects:");
-        for (Project iProject : this.projects) {
+        for (ITask iProject : this.projects) {
             out.printf("\n\nProject #" + i++);
             iProject.writeFormat(out);
         }
@@ -319,21 +345,30 @@ public class User implements Serializable, Selectable, IUser {
                 + this.name + " ";
         buf.append(info);
         ArrayList<ITask> tasksNotInProjects = new ArrayList<>(tasks);
-        for (Project iProject : this.projects)
-            for (ITask iTask : iProject.getTasks())
+        for (ITask iProject : this.projects) {
+            for (ITask iTask : ((Project) iProject).getTasks()) {
                 tasksNotInProjects.remove(iTask);
+            }
+        }
         buf.append("( ").append(tasksNotInProjects.size()).append(" ");
-        for (ITask iTask : tasksNotInProjects)
+        for (ITask iTask : tasksNotInProjects) {
             buf.append(iTask.toString());
+        }
         buf.append("), ( ").append(this.projects.size()).append(" ");
-        for (Project iProject : this.projects)
+        for (ITask iProject : this.projects) {
             buf.append(iProject.toString());
+        }
         buf.append("))");
         return buf.toString();
     }
 
-    public void writeXML(Document document, Element root, Transformer transformer, DOMSource domSource, StreamResult streamResult)
-            throws TransformerException {
+    public void writeXML(
+            Document document,
+            Element root,
+            Transformer transformer,
+            DOMSource domSource,
+            StreamResult streamResult
+    ) throws TransformerException {
         Element user = document.createElement("user");
         root.appendChild(user);
         user.setAttribute("id", String.valueOf(this.id));
@@ -345,8 +380,8 @@ public class User implements Serializable, Selectable, IUser {
         Element tasksOutOfProjects = document.createElement("tasksOutOfProjects");
         user.appendChild(tasksOutOfProjects);
         Collection<ITask> tasksOutOfProjectsArr = new ArrayList<>(tasks);
-        for (Project iProject : this.projects) {
-            for (ITask iTask : iProject.getTasks()) {
+        for (ITask iProject : this.projects) {
+            for (ITask iTask : ((Project) iProject).getTasks()) {
                 tasksOutOfProjectsArr.remove(iTask);
             }
         }
@@ -356,7 +391,7 @@ public class User implements Serializable, Selectable, IUser {
 
         Element projects = document.createElement("projects");
         user.appendChild(projects);
-        for (Project iProject : this.projects) {
+        for (ITask iProject : this.projects) {
             iProject.writeXML(document, projects, transformer, domSource, streamResult);
         }
 

@@ -6,6 +6,6 @@ module org.openjfx {
     opens org.openjfx to javafx.fxml;
     exports org.openjfx;
 
-    opens org.openjfx.controllers to javafx.fxml;
-    exports org.openjfx.controllers;
+    opens org.openjfx.mvc.view.jfxControllers to javafx.fxml;
+    exports org.openjfx.mvc.view.jfxControllers;
 }

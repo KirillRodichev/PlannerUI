@@ -1,10 +1,12 @@
-package org.openjfx.controllers;
+package org.openjfx.mvc.view.jfxControllers;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import org.openjfx.App;
-import org.openjfx.mvc.view.ModalWindows;
+import org.openjfx.constants.UIControllers;
+import org.openjfx.messages.UI.WarningMsg;
+import org.openjfx.mvc.view.ModalWindow;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -13,24 +15,22 @@ import java.text.ParseException;
 
 public class SignupScreenController {
 
-    private static final String ALERT_MSG = "User name must contain not less then 2 letters";
-
     @FXML
     private TextField input;
 
     public void signup(MouseEvent mouseEvent) throws IOException {
         if (input.getText().length() > 1) {
             try {
-                App.setRoot("menu", input.getText());
+                App.setRoot(UIControllers.MENU, input.getText());
             } catch (ParseException | SAXException | ParserConfigurationException e) {
                 e.printStackTrace();
             }
         } else {
-            ModalWindows.alertWindow(ALERT_MSG);
+            ModalWindow.alertWindow(WarningMsg.ILLEGAL_USER_NAME);
         }
     }
 
     public void switchToLogin(MouseEvent mouseEvent) throws IOException {
-        App.setRoot("login");
+        App.setRoot(UIControllers.LOGIN);
     }
 }

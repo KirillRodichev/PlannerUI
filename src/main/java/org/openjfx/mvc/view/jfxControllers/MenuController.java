@@ -1,7 +1,6 @@
-package org.openjfx.controllers;
+package org.openjfx.mvc.view.jfxControllers;
 
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.geometry.Orientation;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
@@ -11,7 +10,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.util.Pair;
 import org.openjfx.App;
-import org.openjfx.FakeData;
 import org.openjfx.constants.TaskFieldNames;
 import org.openjfx.constants.UIConsts;
 import org.openjfx.enums.TaskState;
@@ -19,18 +17,23 @@ import org.openjfx.enums.TaskType;
 import org.openjfx.exceptions.TaskException;
 import org.openjfx.exceptions.UserException;
 import org.openjfx.interfaces.ITask;
+import org.openjfx.constants.UIControllers;
+import org.openjfx.messages.UI.WarningMsg;
 import org.openjfx.mvc.controllers.TaskController;
 import org.openjfx.mvc.controllers.UserController;
 import org.openjfx.mvc.models.Project;
 import org.openjfx.mvc.models.Task;
-import org.openjfx.mvc.view.ModalWindows;
+import org.openjfx.mvc.models.User;
+import org.openjfx.mvc.view.ModalWindow;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
 import java.io.IOException;
-import java.net.URL;
 import java.text.ParseException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class MenuController {
 
@@ -39,12 +42,19 @@ public class MenuController {
     private static final String TASK_LINK_STYLE = "taskLink";
     private static final String ADD_BTN_STYLE = "addBtn";
     private static final String DELETE_BTN_STYLE = "deleteBtn";
-    private static final String PROJ_CONTAINER_STYLE = "deleteBtn";
+    private static final String PROJECT_CONTAINER_STYLE = "deleteBtn";
     private static final String SEPARATOR_STYLE = "separator";
     private static final String LIST_LABEL_STYLE = "listLabel";
 
-    private UserController userController;
-    private TaskController taskController;
+    private static final String TASK_LABEL = "Tasks";
+    private static final String PROJECT_LABEL = "Projects";
+
+    private static final String ADD_TASK_WINDOW_LABEL = "Add Task";
+    private static final String SET_HEADER = "Set ";
+    private static final String ADD_HEADER = "Add ";
+
+    private static UserController userController = new UserController();
+    private static TaskController taskController = new TaskController();
 
     @FXML
     private ScrollPane scrollView;
@@ -53,29 +63,44 @@ public class MenuController {
     @FXML
     private Text userName;
 
-    public void setUserId(int id) throws SAXException, ParserConfigurationException, ParseException, IOException {
-        this.userController.actionReadXml();
-        this.userController.selectUser(id);
-        try {
-            this.userName.setText(this.userController.actionGetUser(this.userController.getSelectedUserId()).getName());
-        } catch (UserException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void createUser(String name) {
-        this.userController.actionPushNewUser(name);
-        this.userController.selectUser(this.userController.popUser().getId());
-        try {
-            this.userName.setText(this.userController.actionGetUser(this.userController.getSelectedUserId()).getName());
-        } catch (UserException e) {
-            e.printStackTrace();
-        }
-    }
-
     public MenuController() {
-        userController = new UserController();
-        taskController = new TaskController();
+        if (userController.isEmpty()) {
+            try {
+                userController.actionReadXml();
+            } catch (IOException | SAXException | ParserConfigurationException | ParseException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public int getSelectedUserId() {
+        return userController.getSelectedUserId();
+    }
+
+    public UserController getUserController() {
+        return userController;
+    }
+
+    public void setUserId(int id) throws SAXException, ParserConfigurationException, ParseException, IOException {
+        //userController.actionReadXml();
+        userController.selectUser(id);
+        try {
+            System.out.println("ID in Menu: " + userController.getSelectedUserId());
+            this.userName.setText(userController.actionGetUser(userController.getSelectedUserId()).getName());
+        } catch (UserException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void createUser(String name) throws SAXException, ParserConfigurationException, ParseException, IOException {
+        //userController.actionReadXml();
+        userController.actionPushNewUser(name);
+        userController.selectUser(userController.popUser().getId());
+        try {
+            this.userName.setText(userController.actionGetUser(userController.getSelectedUserId()).getName());
+        } catch (UserException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private ArrayList<ITask> filterTasksByState(ArrayList<ITask> tasks, TaskState state) {
@@ -83,16 +108,6 @@ public class MenuController {
         for (ITask task : tasks) {
             if (task.getState() == state) {
                 result.add(task);
-            }
-        }
-        return result;
-    }
-
-    private ArrayList<Project> filterProjectsByState(ArrayList<Project> projects, TaskState state) {
-        ArrayList<Project> result = new ArrayList<>();
-        for (Project project : projects) {
-            if (project.getState() == state) {
-                result.add(project);
             }
         }
         return result;
@@ -108,16 +123,6 @@ public class MenuController {
         return result;
     }
 
-    private ArrayList<Project> filterProjectsByType(ArrayList<Project> projects, TaskType type) {
-        ArrayList<Project> result = new ArrayList<>();
-        for (Project project : projects) {
-            if (project.getType() == type) {
-                result.add(project);
-            }
-        }
-        return result;
-    }
-
     private void addHeader(String header, FlowPane container) {
         Label containerHeader = new Label(header);
         containerHeader.getStyleClass().add(TASK_HEADER_STYLE);
@@ -125,72 +130,68 @@ public class MenuController {
     }
 
     private void addOnMouseClickedListener(
-            Hyperlink hyperlink, String windowTitle, String windowField, Object task
+            Hyperlink hyperlink, String windowTitle, String windowField, ITask task
     ) {
         hyperlink.setOnMouseClicked((event1 -> {
-            Object res = ModalWindows.editTaskFieldWindow(windowTitle, windowField);
-            hyperlink.setText(res.toString());
-            hyperlink.getStyleClass().remove(ADD_BTN_STYLE);
-            int taskIndex = task instanceof Project
-                    ? taskController.getTaskIndex((Project) task) : taskController.getTaskIndex((Task) task);
-            try {
-                userController.actionSetTaskField(this.userController.getSelectedUserId(), taskIndex, windowField, res);
-            } catch (UserException | TaskException e) {
-                e.printStackTrace();
+            ModalWindow window = new ModalWindow(windowTitle);
+            Object res = window.editTaskFieldWindow(windowField, userController);
+            if (res != null) {
+                hyperlink.setText(res.toString());
+                hyperlink.getStyleClass().remove(ADD_BTN_STYLE);
+                int taskIndex = taskController.getTaskIndex(task);
+                try {
+                    userController.actionSetTaskField(userController.getSelectedUserId(), taskIndex, windowField, res);
+                } catch (UserException e) {
+                    throw new RuntimeException(e);
+                }
             }
         }));
     }
 
     private Pair<String, Hyperlink> createLinkAndTitle(
-            Object task, String modalTitle
+            ITask task, String modalTitle
     ) {
         Hyperlink link;
         String title;
         String field;
         switch (modalTitle) {
             case TaskFieldNames.NAME:
-                field = task instanceof Project ? ((Project) task).getName() : ((Task) task).getName();
+                field = task.getName();
                 break;
             case TaskFieldNames.DESCRIPTION:
-                field = task instanceof Project ? ((Project) task).getDescription() : ((Task) task).getDescription();
+                field = task.getDescription();
                 break;
             case TaskFieldNames.START_DATE:
-                Date startDate = task instanceof Project
-                        ? ((Project) task).getStartDate() : ((Task) task).getStartDate();
-                field = startDate != null ? startDate.toString() : null;
+                field = task.getStartDate() != null ? task.getStartDate().toString() : null;
                 break;
             case TaskFieldNames.FINISH_DATE:
-                Date finishDate = task instanceof Project
-                        ? ((Project) task).getFinishDate() : ((Task) task).getFinishDate();
-                field = finishDate != null ? finishDate.toString() : null;
+                field = task.getFinishDate() != null ? task.getFinishDate().toString() : null;
                 break;
             case TaskFieldNames.TASK_STATE:
-                field = task instanceof Project
-                        ? ((Project) task).getState().toString() : ((Task) task).getState().toString();
+                field = task.getState().toString();
                 break;
             case TaskFieldNames.TASK_TYPE:
-                field = task instanceof Project
-                        ? ((Project) task).getType().toString() : ((Task) task).getType().toString();
+                field = task.getType().toString();
                 break;
             case TaskFieldNames.TAG:
-                field = task instanceof Project ? ((Project) task).getTag() : ((Task) task).getTag();
+                field = task.getTag();
                 break;
             default:
-                throw new IllegalStateException("Unexpected value: " + modalTitle);
+                throw new IllegalStateException(modalTitle);
         }
         if (field != null) {
             link = new Hyperlink(field);
             link.getStyleClass().add(TASK_LINK_STYLE);
-            title = "Set".concat(modalTitle);
+            title = SET_HEADER.concat(modalTitle);
         } else {
-            link = new Hyperlink("add");
+            link = new Hyperlink(ADD_HEADER);
             link.getStyleClass().add(ADD_BTN_STYLE);
-            title = "Add".concat(modalTitle);
+            title = ADD_HEADER.concat(modalTitle);
         }
         return new Pair<>(title, link);
     }
 
-    private void addInfoFields(GridPane taskInfoContainer, Object task) {
+    private void addInfoFields(GridPane taskInfoContainer, ITask task) {
         for (int i = 0; i < TaskFieldNames.FIELDS.length; i++) {
             Label label = new Label(UIConsts.FIELDS[i]);
             label.getStyleClass().add(TASK_LABEL_STYLE);
@@ -215,72 +216,74 @@ public class MenuController {
         taskInfoContainer.add(separator, 0, 0);
     }
 
-    /*
-    если я указываю, что метод пробрасывает TaskEx и UserEx, то среда все равно предлагает обернуть вызов удаления 
-    в try catch. Почему здесь нельзя указать, что метод пробрасывает исключения?
-     */
-    private void drawDeleteButton(GridPane taskInfoContainer, int taskId) {
+
+    private void drawDeleteButton(GridPane taskInfoContainer, int taskId, VBox verticalContainer, Hyperlink hyperlink) {
         if (!taskInfoContainer.getChildren().isEmpty()) {
-            Button deleteTaskBtn = new Button("Delete");
+            Button deleteTaskBtn = new Button(UIConsts.DELETE_BUTTON);
             deleteTaskBtn.getStyleClass().add(DELETE_BTN_STYLE);
             taskInfoContainer.add(deleteTaskBtn, 0, 8);
             deleteTaskBtn.setOnMouseClicked((event1 -> {
                 try {
-                    this.userController.actionDeleteTask(this.userController.getSelectedUserId(), taskId);
+                    userController.actionDeleteTask(userController.getSelectedUserId(), taskId);
+                    verticalContainer.getChildren().remove(hyperlink);
+                    clearInfoContainer(verticalContainer, taskInfoContainer);
                 } catch (UserException | TaskException e) {
-                    System.out.println("Delete exception: " + e.getLocalizedMessage());
+                    throw new RuntimeException(e);
                 }
             }));
         }
     }
 
-    private void drawLabels(VBox verticalContainer, Object task) {
+    private void drawLabels(VBox verticalContainer, ITask task) {
         Label label = new Label();
         label.getStyleClass().add(LIST_LABEL_STYLE);
         if (task instanceof Project) {
-            label.setText("Projects");
+            label.setText(PROJECT_LABEL);
         } else {
-            label.setText("Tasks");
+            label.setText(TASK_LABEL);
         }
         verticalContainer.getChildren().add(label);
     }
 
-    private void drawTaskList(ArrayList<?> tasks, VBox verticalContainer, GridPane taskInfoContainer) {
+    private void drawTaskList(ArrayList<ITask> tasks, VBox verticalContainer, GridPane taskInfoContainer) {
         Hyperlink[] editTaskField = new Hyperlink[tasks.size()];
         drawLabels(verticalContainer, tasks.get(0));
         for (int i = 0; i < editTaskField.length; i++) {
-            if (tasks.get(i) instanceof Task) {
-                editTaskField[i] = new Hyperlink((i + 1) + ". " + ((Task) tasks.get(i)).getName());
-            } else {
-                editTaskField[i] = new Hyperlink((i + 1) + ". " + ((Project) tasks.get(i)).getName());
-            }
+            ITask task = tasks.get(i);
+            editTaskField[i] = createLink(task, i);
             editTaskField[i].getStyleClass().add(TASK_LINK_STYLE);
             int finalI = i;
             editTaskField[i].setOnMouseClicked((event) -> {
                         clearInfoContainer(verticalContainer, taskInfoContainer);
                         drawSeparator(taskInfoContainer);
                         addInfoFields(taskInfoContainer, tasks.get(finalI));
-                        if (tasks.get(finalI) instanceof Task) {
-                            drawDeleteButton(taskInfoContainer, ((Task) tasks.get(finalI)).getId());
-                        } else {
-                            drawDeleteButton(taskInfoContainer, ((Project) tasks.get(finalI)).getId());
-                        }
+                        drawDeleteButton(taskInfoContainer, tasks.get(finalI).getId(), verticalContainer, editTaskField[finalI]);
                         verticalContainer.getChildren().add(taskInfoContainer);
                     }
             );
             verticalContainer.getChildren().add(editTaskField[i]);
             if (tasks.get(finalI) instanceof Project) {
+                Project project = (Project) tasks.get(finalI);
                 try {
-                    drawTaskList(this.userController.actionGetProjects().get(finalI).getTasks(), verticalContainer, taskInfoContainer);
+                    for (ITask p : userController.actionGetProjects()) {
+                        if (p.getName().equals(project.getName())) {
+                            project = (Project) p;
+                        }
+                    }
+                    drawTaskList(project.getTasks(), verticalContainer, taskInfoContainer);
                 } catch (UserException e) {
-                    e.printStackTrace();
+                    throw new RuntimeException();
                 }
             }
         }
     }
 
+    private Hyperlink createLink(ITask task, int i) {
+        return new Hyperlink((i + 1) + ". " + task.getName());
+    }
+
     private void addEmptyTasksListMessage(FlowPane container) {
-        Label emptyMessage = new Label("No tasks here, try to add some");
+        Label emptyMessage = new Label(WarningMsg.EMPTY_TASK_LIST_MSG);
         VBox verticalContainer = new VBox();
         verticalContainer.getChildren().add(emptyMessage);
         container.getChildren().add(verticalContainer);
@@ -294,21 +297,21 @@ public class MenuController {
         GridPane taskInfoContainer = new GridPane();
 
         ArrayList<ITask> tasks;
-        ArrayList<Project> projects;
+        ArrayList<ITask> projects;
         if (filter instanceof TaskState) {
             tasks = filterTasksByState(
-                    (ArrayList<ITask>) userController.actionGetTasksOutOfProjects(this.userController.getSelectedUserId()),
+                    (ArrayList<ITask>) userController.actionGetTasksOutOfProjects(userController.getSelectedUserId()),
                     (TaskState) filter
             );
-            projects = filterProjectsByState(userController.actionGetProjects(), (TaskState) filter);
+            projects = filterTasksByState(userController.actionGetProjects(), (TaskState) filter);
         } else if (filter instanceof TaskType) {
             tasks = filterTasksByType(
-                    (ArrayList<ITask>) userController.actionGetTasksOutOfProjects(this.userController.getSelectedUserId()),
+                    (ArrayList<ITask>) userController.actionGetTasksOutOfProjects(userController.getSelectedUserId()),
                     (TaskType) filter
             );
-            projects = filterProjectsByType(userController.actionGetProjects(), (TaskType) filter);
+            projects = filterTasksByType(userController.actionGetProjects(), (TaskType) filter);
         } else {
-            tasks = (ArrayList<ITask>) userController.actionGetTasksOutOfProjects(this.userController.getSelectedUserId());
+            tasks = (ArrayList<ITask>) userController.actionGetTasksOutOfProjects(userController.getSelectedUserId());
             projects = userController.actionGetProjects();
         }
         if (!tasks.isEmpty()) {
@@ -329,7 +332,7 @@ public class MenuController {
         VBox verticalContainer = new VBox();
         container.getChildren().add(verticalContainer);
         GridPane taskInfoContainer = new GridPane();
-        addHeader("Search result", container);
+        addHeader(UIConsts.HEADER_SEARCH, container);
         if (!tasks.isEmpty()) {
             drawTaskList((ArrayList<ITask>) tasks, verticalContainer, taskInfoContainer);
         } else {
@@ -341,64 +344,64 @@ public class MenuController {
 
     @FXML
     private void drawInProcessTasks() throws UserException {
-        drawContainer("Tasks in process", TaskState.IN_PROCESS);
+        drawContainer(UIConsts.HEADER_IN_PROCESS, TaskState.IN_PROCESS);
     }
 
     @FXML
     private void drawPausedTasks() throws UserException {
-        drawContainer("Paused tasks", TaskState.PAUSED);
+        drawContainer(UIConsts.HEADER_PAUSED, TaskState.PAUSED);
     }
 
     @FXML
     private void drawFinishedTasks() throws UserException {
-        drawContainer("Finished tasks", TaskState.FINISHED);
+        drawContainer(UIConsts.HEADER_FINISHED, TaskState.FINISHED);
     }
 
     @FXML
     private void drawDelayedTasks() throws UserException {
-        drawContainer("Delayed tasks", TaskState.DELAYED);
+        drawContainer(UIConsts.HEADER_DELAYED, TaskState.DELAYED);
     }
 
     @FXML
     private void drawPreparationTasks() throws UserException {
-        drawContainer("Tasks in preparation", TaskState.PREPARATION);
+        drawContainer(UIConsts.HEADER_IN_PREPARATION, TaskState.PREPARATION);
     }
 
     @FXML
     private void drawWaitingTasks() throws UserException {
-        drawContainer("Waiting tasks", TaskState.WAITING);
+        drawContainer(UIConsts.HEADER_WAITING, TaskState.WAITING);
     }
 
     @FXML
     private void drawTodayTasks() throws UserException {
-        drawContainer("Today tasks", TaskType.TODAY);
+        drawContainer(UIConsts.HEADER_TODAY, TaskType.TODAY);
     }
 
     @FXML
     private void drawGeneralTasks() throws UserException {
-        drawContainer("General tasks", TaskType.GENERAL);
+        drawContainer(UIConsts.HEADER_GENERAL, TaskType.GENERAL);
     }
 
     @FXML
     private void drawLessImportantTasks() throws UserException {
-        drawContainer("Less important tasks", TaskType.LESS_IMPORTANT);
+        drawContainer(UIConsts.HEADER_LESS_IMPORTANT, TaskType.LESS_IMPORTANT);
     }
 
     @FXML
     private void drawAnyTimeTasks() throws UserException {
-        drawContainer("Any time tasks", TaskType.ANY_TIME);
+        drawContainer(UIConsts.HEADER_ANY_TIME, TaskType.ANY_TIME);
     }
 
     @FXML
     private void drawAllTasks() throws UserException {
-        drawContainer("All tasks", "filter");
+        drawContainer(UIConsts.HEADER_ALL_TASKS, "filter");
     }
 
     @FXML
     private void switchToProjects() {
         FlowPane container = new FlowPane(Orientation.VERTICAL, 10, 10);
         Label containerHeader = new Label("Projects");
-        containerHeader.getStyleClass().add(PROJ_CONTAINER_STYLE);
+        containerHeader.getStyleClass().add(PROJECT_CONTAINER_STYLE);
         container.getChildren().add(containerHeader);
         scrollView.setContent(container);
     }
@@ -406,22 +409,24 @@ public class MenuController {
     public void search(MouseEvent event) throws UserException {
         String text = searchField.getText();
         if ((text != null && !text.isEmpty())) {
-            System.out.println("ENTERED TEXT: " + searchField.getText());
             List<ITask> res = new ArrayList<>(
-                    this.userController.actionGetTasksByTagSubstring(this.userController.getSelectedUserId(), text)
+                    userController.actionGetTasksByTagSubstring(userController.getSelectedUserId(), text)
             );
             drawSearchResContainer(res);
-        } else {
-            System.out.println("NOTHING ENTERED");
         }
     }
 
     public void logWithAnotherAccount(MouseEvent mouseEvent) throws IOException {
-        this.userController.selectUser(-1);
-        App.setRoot("login");
+        System.out.println("selected user MENU: "  + userController.getSelectedUserId());
+        App.setRoot(UIControllers.LOGIN);
     }
 
     public void addTask(MouseEvent mouseEvent) throws UserException {
-        this.userController = ModalWindows.createTaskWindow("title", this.userController, new Task());
+        ModalWindow window = new ModalWindow(ADD_TASK_WINDOW_LABEL);
+        window.createTaskWindow(userController, new Task());
+    }
+
+    public void saveChanges(MouseEvent mouseEvent) throws TransformerException, ParserConfigurationException {
+        userController.actionWriteXML();
     }
 }

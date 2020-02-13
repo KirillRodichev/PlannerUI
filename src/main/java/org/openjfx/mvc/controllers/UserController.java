@@ -28,6 +28,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 public class UserController {
     private UserList userList;
@@ -37,6 +38,10 @@ public class UserController {
     public UserController() {
         this.userList = new UserList();
         this.selectedUserId = -1;
+    }
+
+    public boolean isEmpty() {
+        return this.userList.size() == 0;
     }
 
     public void actionDeleteUser(int userId) throws UserException {
@@ -166,12 +171,11 @@ public class UserController {
         userList.setUserById(userId, user);
     }
 
-    public <T> void actionSetTaskField(int userId, int taskIndex, String fieldName, T field)
-            throws TaskException, UserException {
+    public <T> void actionSetTaskField(int userId, int taskId, String fieldName, T field) throws UserException {
         User user = userList.getUserByID(userId);
-        Task task = (Task) user.getTaskByIndex(taskIndex);
+        Task task = (Task) user.getTaskById(taskId);
         fieldSetter(fieldName, field, task);
-        user.setTaskByIndex(taskIndex, task);
+        user.setTaskById(taskId, task);
         userList.setUserById(userId, user);
     }
 
@@ -197,7 +201,7 @@ public class UserController {
         return this.selectedUserId;
     }
 
-    public ArrayList<Project> actionGetProjects() throws UserException {
+    public ArrayList<ITask> actionGetProjects() throws UserException {
         return this.userList.getUserByID(this.selectedUserId).getProjects();
     }
 
@@ -237,6 +241,11 @@ public class UserController {
     public Collection<ITask> actionGetTasksByTagSubstring(int userId, String sub) throws UserException {
         User user = userList.getUserByID(userId);
         return user.findBySubstringInTag(sub);
+    }
+
+    public Collection<ITask> actionGetTasks() throws UserException {
+        User user = userList.getUserByID(this.selectedUserId);
+        return user.getTasks();
     }
 
     // WRITE FORMAT ACTIONS

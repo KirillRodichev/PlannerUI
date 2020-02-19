@@ -23,7 +23,6 @@ import org.openjfx.messages.UI.WarningMsg;
 import org.openjfx.mvc.controllers.UserController;
 import org.openjfx.mvc.models.Project;
 import org.openjfx.mvc.models.Task;
-import org.openjfx.mvc.models.User;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -41,8 +40,9 @@ public class ModalWindow {
     private static final String MODAL_MANIPULATE_BTNS_STYLE = "modal__manipulateBtns";
     private static final String MODAL_BTNS_CONTAINER_STYLE = "modal__btnContainer";
     private static final String MODAL_TEXT_FIELD = "modal__textField";
-    private static final String TASK_LABEL_STYLE = "taskLabelModal";
+    private static final String MODAL_TEXT_STYLE = "modal__text";
 
+    private static final String TASK_LABEL_STYLE = "taskLabelModal";
     private static final String TASK_TYPE_DROPDOWN = "Select type";
     private static final String TASK_STATE_DROPDOWN = "Select state";
 
@@ -92,30 +92,30 @@ public class ModalWindow {
                 container.getChildren().add(textField);
                 break;
             case TaskFieldNames.TASK_TYPE:
-                MenuItem[] typeItems = new MenuItem[TaskType.TASK_TYPES_STR.length];
+                MenuItem[] typeItems = new MenuItem[TaskType.values().length];
                 MenuButton typeDropdown = new MenuButton();
-                for (int i = 0; i < TaskType.TASK_TYPES_STR.length; i++) {
-                    typeItems[i] = new MenuItem(TaskType.TASK_TYPES_STR[i]);
+                for (int i = 0; i < TaskType.values().length; i++) {
+                    typeItems[i] = new MenuItem(TaskType.values()[i].getStrVal());
                     int finalI = i;
                     MenuButton finalTypeDropdown = typeDropdown;
                     typeItems[i].setOnAction(actionEvent -> {
-                        selectedType = TaskType.TASK_TYPES[finalI];
-                        finalTypeDropdown.setText(TaskType.TASK_TYPES_STR[finalI]);
+                        selectedType = TaskType.values()[finalI];
+                        finalTypeDropdown.setText(TaskType.values()[finalI].getStrVal());
                     });
                 }
                 typeDropdown = new MenuButton(TASK_TYPE_DROPDOWN, null, typeItems);
                 container.getChildren().add(typeDropdown);
                 break;
             case TaskFieldNames.TASK_STATE:
-                MenuItem[] stateItems = new MenuItem[TaskState.TASK_STATES_STR.length];
+                MenuItem[] stateItems = new MenuItem[TaskState.values().length];
                 MenuButton stateDropdown = new MenuButton();
-                for (int i = 0; i < TaskState.TASK_STATES_STR.length; i++) {
-                    stateItems[i] = new MenuItem(TaskState.TASK_STATES_STR[i]);
+                for (int i = 0; i < TaskState.values().length; i++) {
+                    stateItems[i] = new MenuItem(TaskState.values()[i].getStrVal());
                     int finalI = i;
                     MenuButton finalStateDropdown = stateDropdown;
                     stateItems[i].setOnAction(actionEvent -> {
-                        selectedState = TaskState.TASK_STATES[finalI];
-                        finalStateDropdown.setText(TaskState.TASK_STATES_STR[finalI]);
+                        selectedState = TaskState.values()[finalI];
+                        finalStateDropdown.setText(TaskState.values()[finalI].getStrVal());
                     });
                 }
                 stateDropdown = new MenuButton(TASK_STATE_DROPDOWN, null, stateItems);
@@ -157,7 +157,7 @@ public class ModalWindow {
                                 alertWindow(ErrorMsg.TASK_ALREADY_EXISTS);
                             }
                         } catch (UserException e) {
-                            throw new RuntimeException();
+                            throw new RuntimeException(e);
                         }
                     } else {
                         alertWindow(TaskFieldNames.NAME + " " + ErrorMsg.INVALID_STR);
@@ -245,21 +245,21 @@ public class ModalWindow {
 
     private void addDropdown(GridPane taskInfoContainer, int gridRow, Object enumSelector) {
         MenuItem[] items = enumSelector instanceof TaskType
-                ? new MenuItem[TaskType.TASK_TYPES_STR.length]
-                : new MenuItem[TaskState.TASK_STATES_STR.length];
+                ? new MenuItem[TaskType.values().length]
+                : new MenuItem[TaskState.values().length];
         MenuButton menuButton = new MenuButton();
         for (int i = 0; i < items.length; i++) {
             items[i] = enumSelector instanceof TaskType
-                    ? new MenuItem(TaskType.TASK_TYPES_STR[i])
-                    : new MenuItem(TaskState.TASK_STATES_STR[i]);
+                    ? new MenuItem(TaskType.values()[i].getStrVal())
+                    : new MenuItem(TaskState.values()[i].getStrVal());
             int finalI = i;
             MenuButton finalMenuButton = menuButton;
             items[i].setOnAction(actionEvent -> {
                 if (enumSelector instanceof TaskType) {
-                    this.selectedType = TaskType.TASK_TYPES[finalI];
+                    this.selectedType = TaskType.values()[finalI];
                     finalMenuButton.setText(selectedType.toString());
                 } else {
-                    this.selectedState = TaskState.TASK_STATES[finalI];
+                    this.selectedState = TaskState.values()[finalI];
                     finalMenuButton.setText(selectedState.toString());
                 }
             });
@@ -411,7 +411,7 @@ public class ModalWindow {
                                             alertWindow(ErrorMsg.TASK_ALREADY_EXISTS);
                                         }
                                     } catch (UserException e) {
-                                        throw new RuntimeException();
+                                        throw new RuntimeException(e);
                                     }
                                 } else {
                                     alertWindow(TaskFieldNames.NAME + " " + ErrorMsg.INVALID_STR);
@@ -508,11 +508,10 @@ public class ModalWindow {
         Pane container = new Pane();
         container.getStyleClass().add(MODAL_CONTAINER_STYLE);
         Label text = new Label(message);
-        text.setStyle("-fx-padding: 30; -fx-background-color: #c6c6c6");
+        text.getStyleClass().add(MODAL_TEXT_STYLE);
         container.getChildren().add(text);
-        Scene scene = new Scene(container, 250, 100);
+        Scene scene = new Scene(container, 300, 100);
         window.setScene(scene);
-        window.setTitle("Modal");
         window.showAndWait();
     }
 }

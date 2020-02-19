@@ -1,5 +1,7 @@
 package org.openjfx.mvc.models;
 
+import org.openjfx.constants.DatePattern;
+import org.openjfx.constants.Global;
 import org.openjfx.constants.TaskFieldNames;
 import org.openjfx.enums.*;
 import org.openjfx.exceptions.*;
@@ -247,17 +249,11 @@ public class Project extends Task implements Cloneable, ITask, Serializable, Sel
             Element element = document.createElement(TaskFieldNames.FIELDS[i]);
             element.appendChild(document.createTextNode(fieldValues[i]));
             if (TaskFieldNames.FIELDS[i].equals(TaskFieldNames.TASK_TYPE)) {
-                if (this.getType() == null) {
-                    element.setAttribute("levelCode", "-1");
-                } else {
-                    element.setAttribute("levelCode", String.valueOf(this.getType().getLevelCode()));
-                }
+                String attrVal = this.getType() == null ? Global.NOT_SELECTED_STR : this.getType().getStrVal();
+                element.setAttribute(Global.ATTRIBUTE_NAME, attrVal);
             } else if (TaskFieldNames.FIELDS[i].equals(TaskFieldNames.TASK_STATE)) {
-                if (this.getState() == null) {
-                    element.setAttribute("levelCode", "-1");
-                } else {
-                    element.setAttribute("levelCode", String.valueOf(this.getState().getLevelCode()));
-                }
+                String attrVal = this.getState() == null ? Global.NOT_SELECTED_STR : this.getState().getStrVal();
+                element.setAttribute(Global.ATTRIBUTE_NAME, attrVal);
             }
             root.appendChild(element);
         }
@@ -265,13 +261,13 @@ public class Project extends Task implements Cloneable, ITask, Serializable, Sel
 
     public void writeXML(Document document, Element root, Transformer transformer, DOMSource domSource, StreamResult streamResult) throws TransformerException {
 
-        Element project = document.createElement("project");
+        Element project = document.createElement(Global.PROJECT);
         root.appendChild(project);
-        project.setAttribute("id", String.valueOf(this.getId()));
+        project.setAttribute(Global.ID, String.valueOf(this.getId()));
 
         fillTaskFields(project, document);
 
-        Element tasks = document.createElement("tasks");
+        Element tasks = document.createElement(Global.TASKS);
         project.appendChild(tasks);
         for (ITask task : this.tasks) {
             task.writeXML(document, tasks, transformer, domSource, streamResult);
@@ -280,29 +276,37 @@ public class Project extends Task implements Cloneable, ITask, Serializable, Sel
         transformer.transform(domSource, streamResult);
     }
 
-    public void readXML(Element eElement) throws ParseException {
-        SimpleDateFormat formatter = new SimpleDateFormat("E MMM dd HH:mm:ss z yyyy", Locale.ENGLISH);
+    private String textContent(NodeList list) {
+        return list.item(0).getTextContent();
+    }
 
-        this.setId(Integer.parseInt(eElement.getAttribute("id")));
-        this.setName(eElement.getElementsByTagName(TaskFieldNames.NAME).item(0).getTextContent());
-        this.setDescription(eElement.getElementsByTagName(TaskFieldNames.DESCRIPTION).item(0).getTextContent());
-        this.setStartDate(!eElement.getElementsByTagName(TaskFieldNames.START_DATE).item(0).getTextContent().equals("null")
-                ? formatter.parse(eElement.getElementsByTagName(TaskFieldNames.START_DATE).item(0).getTextContent())
+    private String getItemValue(NodeList list) {
+        return list.item(0).getAttributes().getNamedItem(Global.ATTRIBUTE_NAME).getNodeValue();
+    }
+
+    public void readXML(Element eElement) throws ParseException {
+        SimpleDateFormat formatter = new SimpleDateFormat(DatePattern.SDF_PATTERN, Locale.ENGLISH);
+
+        this.setId(Integer.parseInt(eElement.getAttribute(Global.ID)));
+        this.setName(textContent(eElement.getElementsByTagName(TaskFieldNames.NAME)));
+        this.setDescription(textContent(eElement.getElementsByTagName(TaskFieldNames.DESCRIPTION)));
+        this.setStartDate(!textContent(eElement.getElementsByTagName(TaskFieldNames.START_DATE)).equals(Global.NULL)
+                ? formatter.parse(textContent(eElement.getElementsByTagName(TaskFieldNames.START_DATE)))
                 : null);
-        this.setFinishDate(!eElement.getElementsByTagName(TaskFieldNames.FINISH_DATE).item(0).getTextContent().equals("null")
-                ? formatter.parse(eElement.getElementsByTagName(TaskFieldNames.FINISH_DATE).item(0).getTextContent())
+        this.setFinishDate(!textContent(eElement.getElementsByTagName(TaskFieldNames.FINISH_DATE)).equals(Global.NULL)
+                ? formatter.parse(textContent(eElement.getElementsByTagName(TaskFieldNames.FINISH_DATE)))
                 : null);
-        TaskType type = Integer.parseInt(eElement.getElementsByTagName(TaskFieldNames.TASK_TYPE).item(0).getAttributes().getNamedItem("levelCode").getNodeValue()) >= 0
-                ? TaskType.TASK_TYPES[Integer.parseInt(eElement.getElementsByTagName(TaskFieldNames.TASK_TYPE).item(0).getAttributes().getNamedItem("levelCode").getNodeValue())]
+        TaskType type = !getItemValue(eElement.getElementsByTagName(TaskFieldNames.TASK_TYPE)).equals(Global.NOT_SELECTED_STR)
+                ? TaskType.values()[TaskType.getIndex(getItemValue(eElement.getElementsByTagName(TaskFieldNames.TASK_TYPE)))]
                 : null;
         this.setType(type);
-        TaskState state = Integer.parseInt(eElement.getElementsByTagName(TaskFieldNames.TASK_STATE).item(0).getAttributes().getNamedItem("levelCode").getNodeValue()) >= 0
-                ? TaskState.TASK_STATES[Integer.parseInt(eElement.getElementsByTagName(TaskFieldNames.TASK_STATE).item(0).getAttributes().getNamedItem("levelCode").getNodeValue())]
+        TaskState state = !getItemValue(eElement.getElementsByTagName(TaskFieldNames.TASK_STATE)).equals(Global.NOT_SELECTED_STR)
+                ? TaskState.values()[TaskState.getIndex(getItemValue(eElement.getElementsByTagName(TaskFieldNames.TASK_STATE)))]
                 : null;
         this.setState(state);
-        this.setTag(eElement.getElementsByTagName(TaskFieldNames.TAG).item(0).getTextContent());
+        this.setTag(textContent(eElement.getElementsByTagName(TaskFieldNames.TAG)));
 
-        NodeList taskList = eElement.getElementsByTagName("task");
+        NodeList taskList = eElement.getElementsByTagName(Global.TASK);
         tasks = new ArrayList<>();
         for (int i = 0; i < taskList.getLength(); i++) {
             Node node = taskList.item(i);

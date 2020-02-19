@@ -272,7 +272,7 @@ public class MenuController {
                     }
                     drawTaskList(project.getTasks(), verticalContainer, taskInfoContainer);
                 } catch (UserException e) {
-                    throw new RuntimeException();
+                    throw new RuntimeException(e);
                 }
             }
         }

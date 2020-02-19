@@ -1,5 +1,6 @@
 package org.openjfx.mvc.models;
 
+import org.openjfx.constants.Global;
 import org.openjfx.enums.TaskState;
 import org.openjfx.enums.TaskType;
 import org.openjfx.exceptions.ProjectException;
@@ -389,7 +390,7 @@ public class User implements Serializable, Selectable, IUser {
             task.writeXML(document, tasksOutOfProjects, transformer, domSource, streamResult);
         }
 
-        Element projects = document.createElement("projects");
+        Element projects = document.createElement(Global.PROJECTS);
         user.appendChild(projects);
         for (ITask iProject : this.projects) {
             iProject.writeXML(document, projects, transformer, domSource, streamResult);
@@ -399,10 +400,10 @@ public class User implements Serializable, Selectable, IUser {
     }
 
     public void readXML(Element eElement) throws ParseException {
-        id = Integer.parseInt(eElement.getAttribute("id"));
-        name = eElement.getElementsByTagName("name").item(0).getTextContent();
+        id = Integer.parseInt(eElement.getAttribute(Global.ID));
+        name = eElement.getElementsByTagName(Global.NAME).item(0).getTextContent();
 
-        NodeList taskList = eElement.getElementsByTagName("task");
+        NodeList taskList = eElement.getElementsByTagName(Global.TASK);
         tasks = new ArrayList<>();
         for (int i = 0; i < taskList.getLength(); i++) {
             Node node = taskList.item(i);
@@ -413,7 +414,7 @@ public class User implements Serializable, Selectable, IUser {
             }
         }
 
-        NodeList projectList = eElement.getElementsByTagName("project");
+        NodeList projectList = eElement.getElementsByTagName(Global.PROJECT);
         projects = new ArrayList<>();
         for (int i = 0; i < projectList.getLength(); i++) {
             Node node = projectList.item(i);

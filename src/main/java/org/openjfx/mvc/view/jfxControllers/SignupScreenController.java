@@ -23,7 +23,7 @@ public class SignupScreenController {
             try {
                 App.setRoot(UIControllers.MENU, input.getText());
             } catch (ParseException | SAXException | ParserConfigurationException e) {
-                e.printStackTrace();
+                throw new RuntimeException(e);
             }
         } else {
             ModalWindow.alertWindow(WarningMsg.ILLEGAL_USER_NAME);

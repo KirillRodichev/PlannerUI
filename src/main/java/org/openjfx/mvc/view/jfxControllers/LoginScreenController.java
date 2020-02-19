@@ -60,7 +60,7 @@ public class LoginScreenController implements Initializable {
                 System.out.println("Selected Id LOGIN: " + userController.getSelectedUserId());
                 App.setRoot(UIControllers.MENU, userController.getSelectedUserId());
             } catch (ParseException | SAXException | ParserConfigurationException e) {
-                throw new RuntimeException();
+                throw new RuntimeException(e);
             }
         } else {
             ModalWindow.alertWindow(WarningMsg.ALERT_MSG);

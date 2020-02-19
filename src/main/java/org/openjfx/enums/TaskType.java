@@ -1,32 +1,37 @@
 package org.openjfx.enums;
 
+import org.openjfx.constants.Global;
+
 public enum TaskType {
-    TODAY (0),
-    GENERAL (1),
-    ANY_TIME (2),
-    LESS_IMPORTANT (3);
 
-    private final int levelCode;
+    TODAY ("Today"),
+    GENERAL ("General"),
+    ANY_TIME ("Any time"),
+    LESS_IMPORTANT ("Less important");
 
-    TaskType(int levelCode) {
-        this.levelCode = levelCode;
+    private final String strVal;
+
+    TaskType(String strVal) {
+        this.strVal = strVal;
     }
 
-    public int getLevelCode() {
-        return levelCode;
+    public String getStrVal() {
+        return this.strVal;
     }
 
-    public static final TaskType[] TASK_TYPES = new TaskType[] {
-            TODAY,
-            GENERAL,
-            ANY_TIME,
-            LESS_IMPORTANT
-    };
-
-    public static final String[] TASK_TYPES_STR = new String[] {
+    private static final String[] STR_VALUES = new String[] {
             "Today",
             "General",
             "Any time",
             "Less important"
+    };
+
+    public static int getIndex(String strVal) {
+        for (int i = 0; i < STR_VALUES.length; i++) {
+            if (strVal.equals(STR_VALUES[i])) {
+                return i;
+            }
+        }
+        return Global.NOT_SELECTED;
     };
 }

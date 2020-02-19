@@ -1,11 +1,13 @@
 package org.openjfx.mvc.models;
 
+import org.openjfx.constants.Global;
 import org.openjfx.constants.TaskFieldNames;
 import org.openjfx.enums.TaskState;
 import org.openjfx.enums.TaskType;
 import org.openjfx.interfaces.ITask;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
@@ -192,17 +194,15 @@ public class Task implements ITask, Cloneable, Serializable {
             Element element = document.createElement(TaskFieldNames.FIELDS[i]);
             element.appendChild(document.createTextNode(fieldValues[i]));
             if (TaskFieldNames.FIELDS[i].equals(TaskFieldNames.TASK_TYPE)) {
-                if (this.taskType == null) {
-                    element.setAttribute("levelCode", "-1");
-                } else {
-                    element.setAttribute("levelCode", String.valueOf(this.taskType.getLevelCode()));
-                }
+                String attrVal = this.getType() == null
+                        ? Global.NOT_SELECTED_STR
+                        : this.getType().getStrVal();
+                element.setAttribute(Global.ATTRIBUTE_NAME, attrVal);
             } else if (TaskFieldNames.FIELDS[i].equals(TaskFieldNames.TASK_STATE)) {
-                if (this.taskState == null) {
-                    element.setAttribute("levelCode", "-1");
-                } else {
-                    element.setAttribute("levelCode", String.valueOf(this.taskState.getLevelCode()));
-                }
+                String attrVal = this.getState() == null
+                        ? Global.NOT_SELECTED_STR
+                        : this.getState().getStrVal();
+                element.setAttribute(Global.ATTRIBUTE_NAME, attrVal);
             }
             root.appendChild(element);
         }
@@ -212,34 +212,42 @@ public class Task implements ITask, Cloneable, Serializable {
             Document document, Element root, Transformer transformer, DOMSource domSource, StreamResult streamResult
     ) throws TransformerException {
 
-        Element task = document.createElement("task");
+        Element task = document.createElement(Global.TASK);
         root.appendChild(task);
-        task.setAttribute("id", String.valueOf(this.id));
+        task.setAttribute(Global.ID, String.valueOf(this.id));
 
         fillTaskFields(task, document);
 
         transformer.transform(domSource, streamResult);
     }
 
+    private String textContent(NodeList list) {
+        return list.item(0).getTextContent();
+    }
+
+    private String getItemValue(NodeList list) {
+        return list.item(0).getAttributes().getNamedItem(Global.ATTRIBUTE_NAME).getNodeValue();
+    }
+
     public void readXML(Element eElement) throws ParseException {
 
         SimpleDateFormat formatter = new SimpleDateFormat("E MMM dd HH:mm:ss z yyyy", Locale.ENGLISH);
 
-        id = Integer.parseInt(eElement.getAttribute("id"));
-        name = eElement.getElementsByTagName(TaskFieldNames.NAME).item(0).getTextContent();
-        description = eElement.getElementsByTagName(TaskFieldNames.DESCRIPTION).item(0).getTextContent();
-        startDate = !eElement.getElementsByTagName(TaskFieldNames.START_DATE).item(0).getTextContent().equals("null")
-                ? formatter.parse(eElement.getElementsByTagName(TaskFieldNames.START_DATE).item(0).getTextContent())
+        id = Integer.parseInt(eElement.getAttribute(Global.ID));
+        name = textContent(eElement.getElementsByTagName(TaskFieldNames.NAME));
+        description = textContent(eElement.getElementsByTagName(TaskFieldNames.DESCRIPTION));
+        startDate = !textContent(eElement.getElementsByTagName(TaskFieldNames.START_DATE)).equals(Global.NULL)
+                ? formatter.parse(textContent(eElement.getElementsByTagName(TaskFieldNames.START_DATE)))
                 : null;
-        finishDate = !eElement.getElementsByTagName(TaskFieldNames.FINISH_DATE).item(0).getTextContent().equals("null")
-                ? formatter.parse(eElement.getElementsByTagName(TaskFieldNames.FINISH_DATE).item(0).getTextContent())
+        finishDate = !textContent(eElement.getElementsByTagName(TaskFieldNames.FINISH_DATE)).equals(Global.NULL)
+                ? formatter.parse(textContent(eElement.getElementsByTagName(TaskFieldNames.FINISH_DATE)))
                 : null;
-        taskType = Integer.parseInt(eElement.getElementsByTagName(TaskFieldNames.TASK_TYPE).item(0).getAttributes().getNamedItem("levelCode").getNodeValue()) >= 0
-                ? TaskType.TASK_TYPES[Integer.parseInt(eElement.getElementsByTagName(TaskFieldNames.TASK_TYPE).item(0).getAttributes().getNamedItem("levelCode").getNodeValue())]
+        taskType = !getItemValue(eElement.getElementsByTagName(TaskFieldNames.TASK_TYPE)).equals(Global.NOT_SELECTED_STR)
+                ? TaskType.values()[TaskType.getIndex(getItemValue(eElement.getElementsByTagName(TaskFieldNames.TASK_TYPE)))]
                 : null;
-        taskState = Integer.parseInt(eElement.getElementsByTagName(TaskFieldNames.TASK_STATE).item(0).getAttributes().getNamedItem("levelCode").getNodeValue()) >= 0
-                ? TaskState.TASK_STATES[Integer.parseInt(eElement.getElementsByTagName(TaskFieldNames.TASK_STATE).item(0).getAttributes().getNamedItem("levelCode").getNodeValue())]
+        taskState = !getItemValue(eElement.getElementsByTagName(TaskFieldNames.TASK_STATE)).equals(Global.NOT_SELECTED_STR)
+                ? TaskState.values()[TaskState.getIndex(getItemValue(eElement.getElementsByTagName(TaskFieldNames.TASK_STATE)))]
                 : null;
-        tag = eElement.getElementsByTagName(TaskFieldNames.TAG).item(0).getTextContent();
+        tag = textContent(eElement.getElementsByTagName(TaskFieldNames.TAG));
     }
 }

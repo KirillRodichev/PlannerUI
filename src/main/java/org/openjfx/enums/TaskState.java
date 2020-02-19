@@ -1,38 +1,40 @@
 package org.openjfx.enums;
 
+import org.openjfx.constants.Global;
+
 public enum TaskState {
-    IN_PROCESS (0),
-    PAUSED (1),
-    FINISHED (2),
-    DELAYED (3),
-    PREPARATION (4),
-    WAITING (5);
+    IN_PROCESS("In process"),
+    PAUSED("Paused"),
+    FINISHED("Finished"),
+    DELAYED("Delayed"),
+    PREPARATION("Preparation"),
+    WAITING("Waiting");
 
-    private final int levelCode;
+    private final String strVal;
 
-    TaskState(int levelCode) {
-        this.levelCode = levelCode;
+    TaskState(String strVal) {
+        this.strVal = strVal;
     }
 
-    public int getLevelCode() {
-        return levelCode;
+    public String getStrVal() {
+        return this.strVal;
     }
 
-    public static final TaskState[] TASK_STATES = new TaskState[] {
-            IN_PROCESS,
-            PAUSED,
-            FINISHED,
-            DELAYED,
-            PREPARATION,
-            WAITING
-    };
-
-    public static final String[] TASK_STATES_STR = new String[] {
+    private static final String[] STR_VALUES = new String[]{
             "In process",
             "Paused",
             "Finished",
             "Delayed",
             "Preparation",
-            "Waiting"
+            "Waiting",
+    };
+
+    public static int getIndex(String strVal) {
+        for (int i = 0; i < STR_VALUES.length; i++) {
+            if (strVal.equals(STR_VALUES[i])) {
+                return i;
+            }
+        }
+        return Global.NOT_SELECTED;
     };
 }

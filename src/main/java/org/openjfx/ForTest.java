@@ -324,5 +324,29 @@ public class ForTest {
 
         uC.actionReadXml();*/
 
+
+        String string = "qwe";
+        String string1 = new String("qwe");
+
+        System.out.println(string == string1);
+        System.out.println(string.equals(string1));
+
     }
+
+    enum En {
+        ONE("one"),
+        TWO("two");
+
+        private String val;
+
+        En(String val) {
+            this.val = val;
+        }
+
+        public String getVal() {
+            return this.val;
+        }
+    }
+
+
 }

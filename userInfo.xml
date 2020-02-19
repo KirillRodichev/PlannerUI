@@ -1,1 +1,369 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><users><user id="0"><name>KupuJIJI</name><tasksOutOfProjects><task id="0"><name>Kill the Bill</name><description>using knife</description><startDate>Thu Mar 20 00:00:00 SAMT 3890</startDate><finishDate>Sat Mar 22 00:00:00 SAMT 3890</finishDate><taskType levelCode="2">ANY_TIME</taskType><taskState levelCode="4">PREPARATION</taskState><tag>death</tag></task><task id="1"><name>7th lab</name><description>don't forget to export smthg</description><startDate>Thu Feb 13 09:42:07 SAMT 2020</startDate><finishDate>Tue Dec 23 00:00:00 SAMT 3919</finishDate><taskType levelCode="0">TODAY</taskType><taskState levelCode="0">IN_PROCESS</taskState><tag>netCracker</tag></task></tasksOutOfProjects><projects><project id="5"><name>Home tasks</name><description/><startDate>null</startDate><finishDate>null</finishDate><taskType levelCode="1">GENERAL</taskType><taskState levelCode="0">IN_PROCESS</taskState><tag/><tasks><task id="2"><name>walk with dog</name><description/><startDate>null</startDate><finishDate>null</finishDate><taskType levelCode="0">TODAY</taskType><taskState levelCode="5">WAITING</taskState><tag>home</tag></task><task id="3"><name>wash the dishes</name><description/><startDate>null</startDate><finishDate>null</finishDate><taskType levelCode="0">TODAY</taskType><taskState levelCode="5">WAITING</taskState><tag>home</tag></task><task id="4"><name>feed the cat</name><description>don't forget water</description><startDate>null</startDate><finishDate>null</finishDate><taskType levelCode="0">TODAY</taskType><taskState levelCode="5">WAITING</taskState><tag>home</tag></task></tasks></project><project id="9"><name>Car project</name><description>wait u just dissed me, I'm perplexed</description><startDate>null</startDate><finishDate>null</finishDate><taskType levelCode="3">LESS_IMPORTANT</taskType><taskState levelCode="-1">null</taskState><tag/><tasks><task id="7"><name>by new tires</name><description>not costly</description><startDate>Thu Feb 13 09:42:07 SAMT 2020</startDate><finishDate>null</finishDate><taskType levelCode="0">TODAY</taskType><taskState levelCode="5">WAITING</taskState><tag>car</tag></task><task id="8"><name>wash the car</name><description/><startDate>Thu Feb 13 09:42:07 SAMT 2020</startDate><finishDate>null</finishDate><taskType levelCode="0">TODAY</taskType><taskState levelCode="3">DELAYED</taskState><tag>car</tag></task></tasks></project></projects></user><user id="2"><name>Alla</name><tasksOutOfProjects><task id="10"><name>go to the gym</name><description>take the shaker</description><startDate>Thu Feb 13 09:42:07 SAMT 2020</startDate><finishDate>null</finishDate><taskType levelCode="0">TODAY</taskType><taskState levelCode="5">WAITING</taskState><tag>gym</tag></task><task id="15"><name>Lera's task</name><description>desc</description><startDate>null</startDate><finishDate>null</finishDate><taskType levelCode="3">LESS_IMPORTANT</taskType><taskState levelCode="5">WAITING</taskState><tag>super tag</tag></task></tasksOutOfProjects><projects><project id="12"><name>Health care</name><description/><startDate>null</startDate><finishDate>null</finishDate><taskType levelCode="-1">null</taskType><taskState levelCode="-1">null</taskState><tag/><tasks><task id="11"><name>buy some drugs</name><description>near the supermarket</description><startDate>null</startDate><finishDate>null</finishDate><taskType levelCode="0">TODAY</taskType><taskState levelCode="5">WAITING</taskState><tag>health</tag></task></tasks></project></projects></user><user id="1"><name>Oleg</name><tasksOutOfProjects><task id="2"><name>walk with dog</name><description/><startDate>null</startDate><finishDate>null</finishDate><taskType levelCode="0">TODAY</taskType><taskState levelCode="5">WAITING</taskState><tag>home</tag></task></tasksOutOfProjects><projects><project id="6"><name>Some tasks</name><description/><startDate>null</startDate><finishDate>null</finishDate><taskType levelCode="-1">null</taskType><taskState levelCode="-1">null</taskState><tag/><tasks><task id="3"><name>wash the dishes</name><description/><startDate>null</startDate><finishDate>null</finishDate><taskType levelCode="0">TODAY</taskType><taskState levelCode="5">WAITING</taskState><tag>home</tag></task><task id="4"><name>feed the cat</name><description>don't forget water</description><startDate>null</startDate><finishDate>null</finishDate><taskType levelCode="0">TODAY</taskType><taskState levelCode="5">WAITING</taskState><tag>home</tag></task></tasks></project></projects></user><user id="6"><name>Mariam</name><tasksOutOfProjects><task id="51"><name>djgdrttt</name><description>sdgjfjfhsd fsd fjsdhf sjdf</description><startDate>Thu Feb 20 00:00:00 SAMT 2020</startDate><finishDate>Fri Mar 20 00:00:00 SAMT 2020</finishDate><taskType levelCode="0">TODAY</taskType><taskState levelCode="0">IN_PROCESS</taskState><tag>day</tag></task><task id="55"><name>djgd</name><description>dhgfj sdjh sdfjs dfjsdf</description><startDate>Thu Apr 23 00:00:00 SAMT 2020</startDate><finishDate>Thu Jun 25 00:00:00 SAMT 2020</finishDate><taskType levelCode="1">GENERAL</taskType><taskState levelCode="1">PAUSED</taskState><tag>for</tag></task><task id="57"><name>nodfj</name><description>sdkjf sfj hdskl;a dsm,</description><startDate>Mon Apr 20 00:00:00 SAMT 2020</startDate><finishDate>Fri Jun 12 00:00:00 SAMT 2020</finishDate><taskType levelCode="2">ANY_TIME</taskType><taskState levelCode="2">FINISHED</taskState><tag>our</tag></task><task id="59"><name>oiu osd</name><description>skljf hs;a wle .,klkljo</description><startDate>Sat Dec 12 00:00:00 SAMT 2020</startDate><finishDate>Fri Mar 12 00:00:00 SAMT 2021</finishDate><taskType levelCode="3">LESS_IMPORTANT</taskType><taskState levelCode="3">DELAYED</taskState><tag>tad</tag></task><task id="61"><name>sjgd fs</name><description>jsdhkf s</description><startDate>Sat May 23 00:00:00 SAMT 2020</startDate><finishDate>Fri Jul 24 00:00:00 SAMT 2020</finishDate><taskType levelCode="0">TODAY</taskType><taskState levelCode="3">DELAYED</taskState><tag>qweqe</tag></task><task id="63"><name>jksdfh sdjf</name><description>sdkljfmsnfsk ldfk sdf</description><startDate>Thu Apr 23 00:00:00 SAMT 2020</startDate><finishDate>Fri Apr 24 00:00:00 SAMT 2020</finishDate><taskType levelCode="1">GENERAL</taskType><taskState levelCode="4">PREPARATION</taskState><tag>turn around</tag></task><task id="65"><name>hjhaj s dl;sa</name><description>skdjh fs dhkfj sdfkjs d</description><startDate>Tue Apr 21 00:00:00 SAMT 2020</startDate><finishDate>Tue Jun 23 00:00:00 SAMT 2020</finishDate><taskType levelCode="3">LESS_IMPORTANT</taskType><taskState levelCode="5">WAITING</taskState><tag>urelk</tag></task><task id="87"><name>djgdt</name><description>sdkjfhsd</description><startDate>null</startDate><finishDate>null</finishDate><taskType levelCode="-1">null</taskType><taskState levelCode="-1">null</taskState><tag>sdf</tag></task><task id="89"><name>djgdeewe</name><description>sdfmnsf</description><startDate>Mon Apr 20 00:00:00 SAMT 2020</startDate><finishDate>Sat May 23 00:00:00 SAMT 2020</finishDate><taskType levelCode="0">TODAY</taskType><taskState levelCode="1">PAUSED</taskState><tag>fdsdf</tag></task></tasksOutOfProjects><projects><project id="67"><name>Some tasks</name><description/><startDate>Tue Apr 21 00:00:00 SAMT 2020</startDate><finishDate>Tue Jun 23 00:00:00 SAMT 2020</finishDate><taskType levelCode="3">LESS_IMPORTANT</taskType><taskState levelCode="5">WAITING</taskState><tag/><tasks><task id="69"><name>wash the dishes</name><description/><startDate>null</startDate><finishDate>null</finishDate><taskType levelCode="0">TODAY</taskType><taskState levelCode="5">WAITING</taskState><tag>home</tag></task><task id="71"><name>feed the cat</name><description>don't forget water</description><startDate>null</startDate><finishDate>null</finishDate><taskType levelCode="0">TODAY</taskType><taskState levelCode="5">WAITING</taskState><tag>home</tag></task></tasks></project><project id="73"><name>Some tasks</name><description/><startDate>Tue Apr 21 00:00:00 SAMT 2020</startDate><finishDate>Tue Jun 23 00:00:00 SAMT 2020</finishDate><taskType levelCode="3">LESS_IMPORTANT</taskType><taskState levelCode="5">WAITING</taskState><tag>car</tag><tasks><task id="75"><name>wash</name><description>sdjkgf sdf</description><startDate>Thu Apr 23 00:00:00 SAMT 2020</startDate><finishDate>Tue Jun 23 00:00:00 SAMT 2020</finishDate><taskType levelCode="0">TODAY</taskType><taskState levelCode="5">WAITING</taskState><tag>car</tag></task><task id="77"><name>feed</name><description>don't forget water</description><startDate>null</startDate><finishDate>null</finishDate><taskType levelCode="0">TODAY</taskType><taskState levelCode="5">WAITING</taskState><tag>car</tag></task></tasks></project></projects></user></users>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<users>
+    <user id="0">
+        <name>KupuJIJI</name>
+        <tasksOutOfProjects>
+            <task id="0">
+                <name>Kill the Bill</name>
+                <description>using knife</description>
+                <startDate>Thu Mar 20 00:00:00 SAMT 3890</startDate>
+                <finishDate>Sat Mar 22 00:00:00 SAMT 3890</finishDate>
+                <taskType attribute="Any time">ANY_TIME</taskType>
+                <taskState attribute="Preparation">PREPARATION</taskState>
+                <tag>death</tag>
+            </task>
+            <task id="1">
+                <name>7th lab</name>
+                <description>don't forget to export smthg</description>
+                <startDate>Thu Feb 13 09:42:07 SAMT 2020</startDate>
+                <finishDate>Tue Dec 23 00:00:00 SAMT 3919</finishDate>
+                <taskType attribute="Today">TODAY</taskType>
+                <taskState attribute="In process">IN_PROCESS</taskState>
+                <tag>netCracker</tag>
+            </task>
+        </tasksOutOfProjects>
+        <projects>
+            <project id="5">
+                <name>Home tasks</name>
+                <description/>
+                <startDate>null</startDate>
+                <finishDate>null</finishDate>
+                <taskType attribute="General">GENERAL</taskType>
+                <taskState attribute="In process">IN_PROCESS</taskState>
+                <tag/>
+                <tasks>
+                    <task id="2">
+                        <name>walk with dog</name>
+                        <description/>
+                        <startDate>null</startDate>
+                        <finishDate>null</finishDate>
+                        <taskType attribute="Today">TODAY</taskType>
+                        <taskState attribute="Waiting">WAITING</taskState>
+                        <tag>home</tag>
+                    </task>
+                    <task id="3">
+                        <name>wash the dishes</name>
+                        <description/>
+                        <startDate>null</startDate>
+                        <finishDate>null</finishDate>
+                        <taskType attribute="Today">TODAY</taskType>
+                        <taskState attribute="Waiting">WAITING</taskState>
+                        <tag>home</tag>
+                    </task>
+                    <task id="4">
+                        <name>feed the cat</name>
+                        <description>don't forget water</description>
+                        <startDate>null</startDate>
+                        <finishDate>null</finishDate>
+                        <taskType attribute="Today">TODAY</taskType>
+                        <taskState attribute="Waiting">WAITING</taskState>
+                        <tag>home</tag>
+                    </task>
+                </tasks>
+            </project>
+            <project id="9">
+                <name>Car project</name>
+                <description>wait u just dissed me, I'm perplexed</description>
+                <startDate>null</startDate>
+                <finishDate>null</finishDate>
+                <taskType attribute="Less important">LESS_IMPORTANT</taskType>
+                <taskState attribute="Not selected">null</taskState>
+                <tag/>
+                <tasks>
+                    <task id="7">
+                        <name>by new tires</name>
+                        <description>not costly</description>
+                        <startDate>Thu Feb 13 09:42:07 SAMT 2020</startDate>
+                        <finishDate>null</finishDate>
+                        <taskType attribute="Today">TODAY</taskType>
+                        <taskState attribute="Waiting">WAITING</taskState>
+                        <tag>car</tag>
+                    </task>
+                    <task id="8">
+                        <name>wash the car</name>
+                        <description/>
+                        <startDate>Thu Feb 13 09:42:07 SAMT 2020</startDate>
+                        <finishDate>null</finishDate>
+                        <taskType attribute="Today">TODAY</taskType>
+                        <taskState attribute="Delayed">DELAYED</taskState>
+                        <tag>car</tag>
+                    </task>
+                </tasks>
+            </project>
+        </projects>
+    </user>
+    <user id="2">
+        <name>Alla</name>
+        <tasksOutOfProjects>
+            <task id="10">
+                <name>go to the gym</name>
+                <description>take the shaker</description>
+                <startDate>Thu Feb 13 09:42:07 SAMT 2020</startDate>
+                <finishDate>null</finishDate>
+                <taskType attribute="Today">TODAY</taskType>
+                <taskState attribute="Waiting">WAITING</taskState>
+                <tag>gym</tag>
+            </task>
+            <task id="15">
+                <name>Lera's task</name>
+                <description>desc</description>
+                <startDate>null</startDate>
+                <finishDate>null</finishDate>
+                <taskType attribute="Less important">LESS_IMPORTANT</taskType>
+                <taskState attribute="Waiting">WAITING</taskState>
+                <tag>super tag</tag>
+            </task>
+        </tasksOutOfProjects>
+        <projects>
+            <project id="12">
+                <name>Health care</name>
+                <description/>
+                <startDate>null</startDate>
+                <finishDate>null</finishDate>
+                <taskType attribute="Not selected">null</taskType>
+                <taskState attribute="Not selected">null</taskState>
+                <tag/>
+                <tasks>
+                    <task id="11">
+                        <name>buy some drugs</name>
+                        <description>near the supermarket</description>
+                        <startDate>null</startDate>
+                        <finishDate>null</finishDate>
+                        <taskType attribute="Today">TODAY</taskType>
+                        <taskState attribute="Waiting">WAITING</taskState>
+                        <tag>health</tag>
+                    </task>
+                </tasks>
+            </project>
+        </projects>
+    </user>
+    <user id="1">
+        <name>Oleg</name>
+        <tasksOutOfProjects>
+            <task id="2">
+                <name>walk with dog</name>
+                <description/>
+                <startDate>null</startDate>
+                <finishDate>null</finishDate>
+                <taskType attribute="Today">TODAY</taskType>
+                <taskState attribute="Waiting">WAITING</taskState>
+                <tag>home</tag>
+            </task>
+        </tasksOutOfProjects>
+        <projects>
+            <project id="6">
+                <name>Some tasks</name>
+                <description/>
+                <startDate>null</startDate>
+                <finishDate>null</finishDate>
+                <taskType attribute="Not selected">null</taskType>
+                <taskState attribute="Not selected">null</taskState>
+                <tag/>
+                <tasks>
+                    <task id="3">
+                        <name>wash the dishes</name>
+                        <description/>
+                        <startDate>null</startDate>
+                        <finishDate>null</finishDate>
+                        <taskType attribute="Today">TODAY</taskType>
+                        <taskState attribute="Waiting">WAITING</taskState>
+                        <tag>home</tag>
+                    </task>
+                    <task id="4">
+                        <name>feed the cat</name>
+                        <description>don't forget water</description>
+                        <startDate>null</startDate>
+                        <finishDate>null</finishDate>
+                        <taskType attribute="Today">TODAY</taskType>
+                        <taskState attribute="Waiting">WAITING</taskState>
+                        <tag>home</tag>
+                    </task>
+                </tasks>
+            </project>
+        </projects>
+    </user>
+    <user id="6">
+        <name>Mariam</name>
+        <tasksOutOfProjects>
+            <task id="51">
+                <name>washsdfsdf</name>
+                <description>sdgjfjfhsd fsd fjsdhf sjdf</description>
+                <startDate>Fri Mar 20 00:00:00 SAMT 2020</startDate>
+                <finishDate>Fri Mar 20 00:00:00 SAMT 2020</finishDate>
+                <taskType attribute="Today">TODAY</taskType>
+                <taskState attribute="In process">IN_PROCESS</taskState>
+                <tag>day</tag>
+            </task>
+            <task id="55">
+                <name>djgd</name>
+                <description>dhgfj sdjh sdfjs dfjsdf</description>
+                <startDate>Thu Apr 23 00:00:00 SAMT 2020</startDate>
+                <finishDate>Thu Jun 25 00:00:00 SAMT 2020</finishDate>
+                <taskType attribute="General">GENERAL</taskType>
+                <taskState attribute="Paused">PAUSED</taskState>
+                <tag>for</tag>
+            </task>
+            <task id="57">
+                <name>nodfj</name>
+                <description>sdkjf sfj hdskl;a dsm,</description>
+                <startDate>Mon Apr 20 00:00:00 SAMT 2020</startDate>
+                <finishDate>Fri Jun 12 00:00:00 SAMT 2020</finishDate>
+                <taskType attribute="Any time">ANY_TIME</taskType>
+                <taskState attribute="Finished">FINISHED</taskState>
+                <tag>our</tag>
+            </task>
+            <task id="59">
+                <name>oiu osd</name>
+                <description>skljf hs;a wle .,klkljo</description>
+                <startDate>Sat Dec 12 00:00:00 SAMT 2020</startDate>
+                <finishDate>Fri Mar 12 00:00:00 SAMT 2021</finishDate>
+                <taskType attribute="Less important">LESS_IMPORTANT</taskType>
+                <taskState attribute="Delayed">DELAYED</taskState>
+                <tag>tad</tag>
+            </task>
+            <task id="61">
+                <name>sjgd fs</name>
+                <description>jsdhkf s</description>
+                <startDate>Sat May 23 00:00:00 SAMT 2020</startDate>
+                <finishDate>Fri Jul 24 00:00:00 SAMT 2020</finishDate>
+                <taskType attribute="Today">TODAY</taskType>
+                <taskState attribute="Delayed">DELAYED</taskState>
+                <tag>qweqe</tag>
+            </task>
+            <task id="63">
+                <name>jksdfh sdjf</name>
+                <description>sdkljfmsnfsk ldfk sdf</description>
+                <startDate>Thu Apr 23 00:00:00 SAMT 2020</startDate>
+                <finishDate>Fri Apr 24 00:00:00 SAMT 2020</finishDate>
+                <taskType attribute="General">GENERAL</taskType>
+                <taskState attribute="Preparation">PREPARATION</taskState>
+                <tag>turn around</tag>
+            </task>
+            <task id="65">
+                <name>hjhaj s dl;sa</name>
+                <description>skdjh fs dhkfj sdfkjs d</description>
+                <startDate>Tue Apr 21 00:00:00 SAMT 2020</startDate>
+                <finishDate>Tue Jun 23 00:00:00 SAMT 2020</finishDate>
+                <taskType attribute="Less important">LESS_IMPORTANT</taskType>
+                <taskState attribute="Waiting">WAITING</taskState>
+                <tag>urelk</tag>
+            </task>
+            <task id="87">
+                <name>djgdt</name>
+                <description>sdkjfhsd</description>
+                <startDate>null</startDate>
+                <finishDate>null</finishDate>
+                <taskType attribute="Not selected">null</taskType>
+                <taskState attribute="Not selected">null</taskState>
+                <tag>sdf</tag>
+            </task>
+            <task id="89">
+                <name>Theodore's task</name>
+                <description>sdfmnsf</description>
+                <startDate>Thu Feb 20 00:00:00 SAMT 2020</startDate>
+                <finishDate>Sat Sep 25 00:00:00 SAMT 2021</finishDate>
+                <taskType attribute="Today">TODAY</taskType>
+                <taskState attribute="Paused">PAUSED</taskState>
+                <tag>car</tag>
+            </task>
+            <task id="89">
+                <name>Theodore's task</name>
+                <description>sdfmnsf</description>
+                <startDate>Thu Feb 20 00:00:00 SAMT 2020</startDate>
+                <finishDate>Sat Sep 25 00:00:00 SAMT 2021</finishDate>
+                <taskType attribute="Today">TODAY</taskType>
+                <taskState attribute="Paused">PAUSED</taskState>
+                <tag>car</tag>
+            </task>
+            <task id="93">
+                <name/>
+                <description/>
+                <startDate>null</startDate>
+                <finishDate>null</finishDate>
+                <taskType attribute="Not selected">null</taskType>
+                <taskState attribute="Not selected">null</taskState>
+                <tag/>
+            </task>
+        </tasksOutOfProjects>
+        <projects>
+            <project id="67">
+                <name>Some tasks</name>
+                <description/>
+                <startDate>Tue Apr 21 00:00:00 SAMT 2020</startDate>
+                <finishDate>Tue Jun 23 00:00:00 SAMT 2020</finishDate>
+                <taskType attribute="Less important">LESS_IMPORTANT</taskType>
+                <taskState attribute="Waiting">WAITING</taskState>
+                <tag/>
+                <tasks>
+                    <task id="69">
+                        <name>wash the dishes</name>
+                        <description/>
+                        <startDate>null</startDate>
+                        <finishDate>null</finishDate>
+                        <taskType attribute="Today">TODAY</taskType>
+                        <taskState attribute="Waiting">WAITING</taskState>
+                        <tag>home</tag>
+                    </task>
+                    <task id="71">
+                        <name>feed the cat</name>
+                        <description>don't forget water</description>
+                        <startDate>null</startDate>
+                        <finishDate>null</finishDate>
+                        <taskType attribute="Today">TODAY</taskType>
+                        <taskState attribute="Waiting">WAITING</taskState>
+                        <tag>home</tag>
+                    </task>
+                </tasks>
+            </project>
+            <project id="73">
+                <name>Some tasks</name>
+                <description/>
+                <startDate>Tue Apr 21 00:00:00 SAMT 2020</startDate>
+                <finishDate>Tue Jun 23 00:00:00 SAMT 2020</finishDate>
+                <taskType attribute="Less important">LESS_IMPORTANT</taskType>
+                <taskState attribute="Waiting">WAITING</taskState>
+                <tag>car</tag>
+                <tasks>
+                    <task id="75">
+                        <name>wash</name>
+                        <description>sdjkgf sdf</description>
+                        <startDate>Thu Apr 23 00:00:00 SAMT 2020</startDate>
+                        <finishDate>Tue Jun 23 00:00:00 SAMT 2020</finishDate>
+                        <taskType attribute="Today">TODAY</taskType>
+                        <taskState attribute="Waiting">WAITING</taskState>
+                        <tag>car</tag>
+                    </task>
+                    <task id="77">
+                        <name>feed</name>
+                        <description>don't forget water</description>
+                        <startDate>null</startDate>
+                        <finishDate>null</finishDate>
+                        <taskType attribute="Today">TODAY</taskType>
+                        <taskState attribute="Waiting">WAITING</taskState>
+                        <tag>car</tag>
+                    </task>
+                </tasks>
+            </project>
+        </projects>
+    </user>
+    <user id="8">
+        <name>dfhgdj</name>
+        <tasksOutOfProjects>
+            <task id="91">
+                <name>dfgdfg</name>
+                <description>hgjhdfs</description>
+                <startDate>Thu Feb 20 00:00:00 SAMT 2020</startDate>
+                <finishDate>Mon Apr 20 00:00:00 SAMT 2020</finishDate>
+                <taskType attribute="General">GENERAL</taskType>
+                <taskState attribute="Not selected">null</taskState>
+                <tag>etggrt</tag>
+            </task>
+        </tasksOutOfProjects>
+        <projects/>
+    </user>
+    <user id="9">
+        <name>Pavel</name>
+        <tasksOutOfProjects/>
+        <projects/>
+    </user>
+</users>

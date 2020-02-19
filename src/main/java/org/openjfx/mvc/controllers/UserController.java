@@ -1,6 +1,7 @@
 package org.openjfx.mvc.controllers;
 
 import javafx.util.Pair;
+import org.openjfx.constants.Global;
 import org.openjfx.constants.TaskFieldNames;
 import org.openjfx.enums.*;
 import org.openjfx.exceptions.*;
@@ -271,7 +272,7 @@ public class UserController {
         DocumentBuilder documentBuilder = documentFactory.newDocumentBuilder();
         Document document = documentBuilder.newDocument();
 
-        Element root = document.createElement("users");
+        Element root = document.createElement(Global.USERS);
         document.appendChild(root);
 
         TransformerFactory transformerFactory = TransformerFactory.newInstance();
@@ -290,7 +291,7 @@ public class UserController {
         DocumentBuilder documentBuilderOut = documentBuilderFactory.newDocumentBuilder();
         Document documentOut = documentBuilderOut.parse(new File(XML_PATH));
 
-        NodeList nodeList = documentOut.getElementsByTagName("user");
+        NodeList nodeList = documentOut.getElementsByTagName(Global.USER);
         userList.clear();
         User tmpUser;
 

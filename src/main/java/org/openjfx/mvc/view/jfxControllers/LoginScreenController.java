@@ -8,6 +8,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.util.Pair;
 import org.openjfx.App;
 import org.openjfx.constants.UIControllers;
+import org.openjfx.enums.ModalType;
 import org.openjfx.messages.UI.WarningMsg;
 import org.openjfx.mvc.controllers.UserController;
 import org.openjfx.mvc.models.User;
@@ -63,7 +64,7 @@ public class LoginScreenController implements Initializable {
                 throw new RuntimeException(e);
             }
         } else {
-            ModalWindow.alertWindow(WarningMsg.ALERT_MSG);
+            ModalWindow.alertWindow(WarningMsg.ALERT_MSG, ModalType.ERROR);
         }
     }
 

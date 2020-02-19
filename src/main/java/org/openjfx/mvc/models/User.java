@@ -190,8 +190,10 @@ public class User implements Serializable, Selectable, IUser {
     public Collection<ITask> findBySubstringInTag(String sub) {
         Collection<ITask> res = new ArrayList<>();
         for (ITask task : this.tasks) {
-            if (task.getTag().contains(sub)) {
-                res.add(task);
+            if (task.getTag() != null) {
+                if (task.getTag().contains(sub)) {
+                    res.add(task);
+                }
             }
         }
         for (ITask project : this.projects) {

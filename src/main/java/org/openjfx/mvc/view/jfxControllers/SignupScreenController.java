@@ -5,6 +5,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import org.openjfx.App;
 import org.openjfx.constants.UIControllers;
+import org.openjfx.enums.ModalType;
 import org.openjfx.messages.UI.WarningMsg;
 import org.openjfx.mvc.view.ModalWindow;
 import org.xml.sax.SAXException;
@@ -26,7 +27,7 @@ public class SignupScreenController {
                 throw new RuntimeException(e);
             }
         } else {
-            ModalWindow.alertWindow(WarningMsg.ILLEGAL_USER_NAME);
+            ModalWindow.alertWindow(WarningMsg.ILLEGAL_USER_NAME, ModalType.ERROR);
         }
     }
 

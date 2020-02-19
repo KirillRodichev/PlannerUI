@@ -14,4 +14,6 @@ public class Global {
     public static final String NULL = "null";
     public static final String USER = "user";
     public static final String USERS = "users";
+    public static final String WARNING_TITLE = "Warning";
+    public static final String ERROR_TITLE = "Error";
 }

@@ -12,12 +12,14 @@ import javafx.util.Pair;
 import org.openjfx.App;
 import org.openjfx.constants.TaskFieldNames;
 import org.openjfx.constants.UIConsts;
+import org.openjfx.enums.ModalType;
 import org.openjfx.enums.TaskState;
 import org.openjfx.enums.TaskType;
 import org.openjfx.exceptions.TaskException;
 import org.openjfx.exceptions.UserException;
 import org.openjfx.interfaces.ITask;
 import org.openjfx.constants.UIControllers;
+import org.openjfx.messages.UI.NotificationMsg;
 import org.openjfx.messages.UI.WarningMsg;
 import org.openjfx.mvc.controllers.TaskController;
 import org.openjfx.mvc.controllers.UserController;
@@ -123,7 +125,7 @@ public class MenuController {
         return result;
     }
 
-    private void addHeader(String header, FlowPane container) {
+    private void addHeader(String header, VBox container) {
         Label containerHeader = new Label(header);
         containerHeader.getStyleClass().add(TASK_HEADER_STYLE);
         container.getChildren().add(containerHeader);
@@ -291,9 +293,9 @@ public class MenuController {
 
     private <T> void drawContainer(String header, T filter) throws UserException {
         FlowPane container = new FlowPane(Orientation.VERTICAL, 10, 10);
-        addHeader(header, container);
         VBox verticalContainer = new VBox();
         container.getChildren().add(verticalContainer);
+        addHeader(header, verticalContainer);
         GridPane taskInfoContainer = new GridPane();
 
         ArrayList<ITask> tasks;
@@ -332,7 +334,7 @@ public class MenuController {
         VBox verticalContainer = new VBox();
         container.getChildren().add(verticalContainer);
         GridPane taskInfoContainer = new GridPane();
-        addHeader(UIConsts.HEADER_SEARCH, container);
+        addHeader(UIConsts.HEADER_SEARCH, verticalContainer);
         if (!tasks.isEmpty()) {
             drawTaskList((ArrayList<ITask>) tasks, verticalContainer, taskInfoContainer);
         } else {
@@ -397,15 +399,6 @@ public class MenuController {
         drawContainer(UIConsts.HEADER_ALL_TASKS, "filter");
     }
 
-    @FXML
-    private void switchToProjects() {
-        FlowPane container = new FlowPane(Orientation.VERTICAL, 10, 10);
-        Label containerHeader = new Label("Projects");
-        containerHeader.getStyleClass().add(PROJECT_CONTAINER_STYLE);
-        container.getChildren().add(containerHeader);
-        scrollView.setContent(container);
-    }
-
     public void search(MouseEvent event) throws UserException {
         String text = searchField.getText();
         if ((text != null && !text.isEmpty())) {
@@ -428,5 +421,6 @@ public class MenuController {
 
     public void saveChanges(MouseEvent mouseEvent) throws TransformerException, ParserConfigurationException {
         userController.actionWriteXML();
+        ModalWindow.alertWindow(NotificationMsg.SAVED_SUCCESSFULLY, ModalType.DEFAULT);
     }
 }

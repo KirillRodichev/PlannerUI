@@ -17,7 +17,6 @@ public class UserList implements Serializable {
     }
 
     public User getUserByID(int id) throws UserException {
-        System.out.println("LENGTH: " + this.users.size());
         for (User user : this.users) {
             if (user.getId() == id)
                 return user;

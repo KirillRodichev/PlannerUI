@@ -1,19 +1,24 @@
 package org.openjfx.mvc.view;
 
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.fxml.FXML;
 import javafx.geometry.Orientation;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.openjfx.App;
 import org.openjfx.constants.DatePattern;
+import org.openjfx.constants.Global;
 import org.openjfx.constants.TaskFieldNames;
 import org.openjfx.constants.UIConsts;
+import org.openjfx.enums.ModalType;
 import org.openjfx.enums.TaskState;
 import org.openjfx.enums.TaskType;
 import org.openjfx.exceptions.UserException;
@@ -41,6 +46,8 @@ public class ModalWindow {
     private static final String MODAL_BTNS_CONTAINER_STYLE = "modal__btnContainer";
     private static final String MODAL_TEXT_FIELD = "modal__textField";
     private static final String MODAL_TEXT_STYLE = "modal__text";
+    private static final String MODAL_WARNING = "modal__warning";
+    private static final String MODAL_ERROR = "modal__error";
 
     private static final String TASK_LABEL_STYLE = "taskLabelModal";
     private static final String TASK_TYPE_DROPDOWN = "Select type";
@@ -112,10 +119,8 @@ public class ModalWindow {
                 for (int i = 0; i < TaskState.values().length; i++) {
                     stateItems[i] = new MenuItem(TaskState.values()[i].getStrVal());
                     int finalI = i;
-                    MenuButton finalStateDropdown = stateDropdown;
                     stateItems[i].setOnAction(actionEvent -> {
                         selectedState = TaskState.values()[finalI];
-                        finalStateDropdown.setText(TaskState.values()[finalI].getStrVal());
                     });
                 }
                 stateDropdown = new MenuButton(TASK_STATE_DROPDOWN, null, stateItems);
@@ -154,34 +159,34 @@ public class ModalWindow {
                             if (!taskAlreadyExists((ArrayList<ITask>) userController.actionGetTasks(), text)) {
                                 this.selectedName = text;
                             } else {
-                                alertWindow(ErrorMsg.TASK_ALREADY_EXISTS);
+                                alertWindow(ErrorMsg.TASK_ALREADY_EXISTS, ModalType.ERROR);
                             }
                         } catch (UserException e) {
                             throw new RuntimeException(e);
                         }
                     } else {
-                        alertWindow(TaskFieldNames.NAME + " " + ErrorMsg.INVALID_STR);
+                        alertWindow(TaskFieldNames.NAME + " " + ErrorMsg.INVALID_STR, ModalType.ERROR);
                     }
                     break;
                 case TaskFieldNames.DESCRIPTION:
                     if (stringValidation(text, false)) {
                         this.selectedDescription = text;
                     } else {
-                        alertWindow(TaskFieldNames.DESCRIPTION + " " + ErrorMsg.INVALID_STR);
+                        alertWindow(TaskFieldNames.DESCRIPTION + " " + ErrorMsg.INVALID_STR, ModalType.ERROR);
                     }
                     break;
                 case TaskFieldNames.START_DATE:
                     try {
-                        this.selectedStartDate = startDateValidation(text);
+                        this.selectedStartDate = dateValidation(text, TaskFieldNames.START_DATE);
                     } catch (RuntimeException e) {
-                        alertWindow(TaskFieldNames.START_DATE + " " + e.getMessage());
+                        alertWindow(TaskFieldNames.START_DATE + " " + e.getMessage(), ModalType.ERROR);
                     }
                     break;
                 case TaskFieldNames.FINISH_DATE:
                     try {
-                        this.selectedFinishDate = finishDateValidation(text);
+                        this.selectedFinishDate = dateValidation(text, TaskFieldNames.FINISH_DATE);
                     } catch (RuntimeException e) {
-                        alertWindow(TaskFieldNames.START_DATE + " " + e.getMessage());
+                        alertWindow(TaskFieldNames.START_DATE + " " + e.getMessage(), ModalType.ERROR);
                     }
                     break;
                 case TaskFieldNames.TASK_TYPE:
@@ -191,7 +196,7 @@ public class ModalWindow {
                     if (stringValidation(text, true)) {
                         this.selectedTag = text;
                     } else {
-                        alertWindow(TaskFieldNames.TAG + " " + ErrorMsg.INVALID_STR);
+                        alertWindow(TaskFieldNames.TAG + " " + ErrorMsg.INVALID_STR, ModalType.ERROR);
                     }
                     break;
             }
@@ -314,80 +319,59 @@ public class ModalWindow {
 
     private String datePartsValidation(String[] dateParts) {
         StringBuffer feedback = new StringBuffer();
-        if (dateParts[0].equals("00")) {
-            feedback.append(WarningMsg.NULL_DAY);
-        }
-        if (dateParts[1].equals("00")) {
-            feedback.append(WarningMsg.NULL_MONTH);
-        }
-        if (Integer.parseInt(dateParts[0]) > 31) {
-            feedback.append(WarningMsg.ILLEGAL_DAY_NUMBER);
-        }
-        if (Integer.parseInt(dateParts[1]) > 12) {
-            feedback.append(WarningMsg.ILLEGAL_MONTH_NUMBER);
-        }
-        if (Integer.parseInt(dateParts[2]) > 2100) {
-            feedback.append(WarningMsg.NOT_REALISTIC_YEAR);
+        if (dateParts.length > 1) {
+            if (dateParts[0].equals("00")) {
+                feedback.append(WarningMsg.NULL_DAY);
+            }
+            if (dateParts[1].equals("00")) {
+                feedback.append(WarningMsg.NULL_MONTH);
+            }
+            if (Integer.parseInt(dateParts[0]) > 31) {
+                feedback.append(WarningMsg.ILLEGAL_DAY_NUMBER);
+            }
+            if (Integer.parseInt(dateParts[1]) > 12) {
+                feedback.append(WarningMsg.ILLEGAL_MONTH_NUMBER);
+            }
+            if (Integer.parseInt(dateParts[2]) > 2100) {
+                feedback.append(WarningMsg.NOT_REALISTIC_YEAR);
+            }
+        } else {
+            feedback.append(ErrorMsg.INVALID_DATE);
         }
         return String.valueOf(feedback);
     }
 
-    private Date startDateValidation(String arg) {
+    private Date dateValidation(String arg, String field) {
         if (arg.length() == 0) return null;
         Date date = null;
         StringBuffer errMsg = new StringBuffer();
         if (DatePattern.PATTERN.matcher(arg).matches()) {
             try {
                 date = new SimpleDateFormat(DatePattern.FORMAT).parse(arg);
-            } catch (ParseException e) {
-                errMsg.append(ErrorMsg.INVALID_DATE);
-            }
-        } else if (errMsg.length() == 0) {
-            errMsg.append(ErrorMsg.INVALID_DATE);
-        }
-
-        String[] dateParts = arg.split("-");
-
-        errMsg.append(datePartsValidation(dateParts));
-
-        if (date != null) {
-            if (date.before(new Date())) {
-                errMsg.append(WarningMsg.ILLEGAL_START_DATE);
-            }
-        }
-        if (errMsg.length() != 0) {
-            throw new RuntimeException(String.valueOf(errMsg));
-        }
-        return date;
-    }
-
-    private Date finishDateValidation(String arg) {
-        if (arg.length() == 0) return null;
-        Date date = null;
-        StringBuffer errMsg = new StringBuffer();
-        if (DatePattern.PATTERN.matcher(arg).matches()) {
-            try {
-                date = new SimpleDateFormat(DatePattern.FORMAT).parse(arg);
-            } catch (ParseException e) {
-                errMsg.append(ErrorMsg.INVALID_DATE);
-            }
-        } else if (errMsg.length() == 0) {
-            errMsg.append(ErrorMsg.INVALID_DATE);
-        }
-
-        String[] dateParts = arg.split("-");
-
-        errMsg.append(datePartsValidation(dateParts));
-
-        if (date != null) {
-            if (this.selectedStartDate != null) {
-                if (date.before(this.selectedStartDate)) {
-                    errMsg.append(WarningMsg.ILLEGAL_FINISH_DATE);
+                switch (field) {
+                    case TaskFieldNames.START_DATE:
+                        if (date.before(new Date())) {
+                            errMsg.append(WarningMsg.ILLEGAL_START_DATE);
+                        }
+                        break;
+                    case TaskFieldNames.FINISH_DATE:
+                        if (this.selectedStartDate != null) {
+                            if (date.before(this.selectedStartDate)) {
+                                errMsg.append(WarningMsg.ILLEGAL_FINISH_DATE);
+                            }
+                        } else if (date.before(new Date())) {
+                            errMsg.append(WarningMsg.ILLEGAL_FINISH_DATE);
+                        }
+                        break;
                 }
-            } else if (date.before(new Date())) {
-                errMsg.append(WarningMsg.ILLEGAL_FINISH_DATE);
+            } catch (ParseException e) {
+                errMsg.append(ErrorMsg.INVALID_DATE);
             }
+        } else if (errMsg.length() == 0) {
+            String[] dateParts = arg.split("-");
+            errMsg.append(datePartsValidation(dateParts));
         }
+
         if (errMsg.length() != 0) {
             throw new RuntimeException(String.valueOf(errMsg));
         }
@@ -408,41 +392,41 @@ public class ModalWindow {
                                         if (!taskAlreadyExists((ArrayList<ITask>) userController.actionGetTasks(), text)) {
                                             selectedName = text;
                                         } else {
-                                            alertWindow(ErrorMsg.TASK_ALREADY_EXISTS);
+                                            alertWindow(ErrorMsg.TASK_ALREADY_EXISTS, ModalType.ERROR);
                                         }
                                     } catch (UserException e) {
                                         throw new RuntimeException(e);
                                     }
                                 } else {
-                                    alertWindow(TaskFieldNames.NAME + " " + ErrorMsg.INVALID_STR);
+                                    alertWindow(TaskFieldNames.NAME + " " + ErrorMsg.INVALID_STR, ModalType.ERROR);
                                 }
                                 break;
                             case TaskFieldNames.DESCRIPTION:
                                 if (stringValidation(text, false)) {
                                     selectedDescription = text;
                                 } else {
-                                    alertWindow(TaskFieldNames.DESCRIPTION + " " + ErrorMsg.INVALID_STR);
+                                    alertWindow(TaskFieldNames.DESCRIPTION + " " + ErrorMsg.INVALID_STR, ModalType.ERROR);
                                 }
                                 break;
                             case TaskFieldNames.START_DATE:
                                 try {
-                                    selectedStartDate = startDateValidation(text);
+                                    selectedStartDate = dateValidation(text, TaskFieldNames.START_DATE);
                                 } catch (RuntimeException e) {
-                                    alertWindow(TaskFieldNames.START_DATE + " " + e.getMessage());
+                                    alertWindow(TaskFieldNames.START_DATE + " " + e.getMessage(), ModalType.ERROR);
                                 }
                                 break;
                             case TaskFieldNames.FINISH_DATE:
                                 try {
-                                    selectedFinishDate = finishDateValidation(text);
+                                    selectedFinishDate = dateValidation(text, TaskFieldNames.FINISH_DATE);
                                 } catch (RuntimeException e) {
-                                    alertWindow(TaskFieldNames.FINISH_DATE + " " + e.getMessage());
+                                    alertWindow(TaskFieldNames.FINISH_DATE + " " + e.getMessage(), ModalType.ERROR);
                                 }
                                 break;
                             case TaskFieldNames.TAG:
                                 if (stringValidation(text, false)) {
                                     selectedTag = text;
                                 } else {
-                                    alertWindow(TaskFieldNames.TAG + " " + ErrorMsg.INVALID_STR);
+                                    alertWindow(TaskFieldNames.TAG + " " + ErrorMsg.INVALID_STR, ModalType.ERROR);
                                 }
                                 break;
                         }
@@ -502,15 +486,34 @@ public class ModalWindow {
         return userController;
     }
 
-    public static void alertWindow(String message) {
+    private static void setAlertStyle(Stage window, Pane pane, ModalType modalType) {
+        switch (modalType) {
+            case ERROR:
+                pane.getStyleClass().add(MODAL_ERROR);
+                window.setTitle(Global.ERROR_TITLE);
+                break;
+            case WARNING:
+                pane.getStyleClass().add(MODAL_WARNING);
+                window.setTitle(Global.WARNING_TITLE);
+                break;
+            case DEFAULT:
+                break;
+        }
+    }
+
+    public static void alertWindow(String message, ModalType modalType) {
         Stage window = new Stage();
         window.initModality(Modality.APPLICATION_MODAL);
-        Pane container = new Pane();
-        container.getStyleClass().add(MODAL_CONTAINER_STYLE);
-        Label text = new Label(message);
-        text.getStyleClass().add(MODAL_TEXT_STYLE);
+
+        Text text = new Text(message);
+
+        StackPane container = new StackPane();
+        setAlertStyle(window, container, modalType);
         container.getChildren().add(text);
+
         Scene scene = new Scene(container, 300, 100);
+        scene.getStylesheets().add(App.class.getResource(UIConsts.STYLESHEET).toExternalForm());
+
         window.setScene(scene);
         window.showAndWait();
     }

@@ -77,6 +77,13 @@
 
 .modal__container {
     -fx-padding: 10, 50, 10, 50;
+}
+
+.modal__error {
+    -fx-background-color: red;
+}
+
+.modal__warning {
     -fx-background-color: #ffcc00;
 }
 
@@ -101,4 +108,6 @@
 
 .modal__text {
     -fx-padding: 30;
+    -fx-background-color: green;
+    -fx-text-fill: red;
 }

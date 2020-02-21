@@ -78,7 +78,6 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <addClasspath>true</addClasspath>
                             <mainClass>org.openjfx.App</mainClass>
                         </manifest>
                     </archive>
